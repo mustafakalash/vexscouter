@@ -26,12 +26,7 @@
                 android:value="com.mkalash.vexscouter.MainActivity" />
         </activity>
         <activity
-            android:name=".TeamActivity"
-            android:parentActivityName=".EventActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mkalash.vexscouter.EventActivity" />
-        </activity>
+            android:name=".TeamActivity"/>
         <activity
             android:name=".EventActivity"
             android:parentActivityName=".MainActivity">
