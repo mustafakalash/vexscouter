@@ -1,3 +1,635 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">VEX Scouter</string>
+
+    <string name="action_filter">Filter</string>
+
+    <string name="season_prompt">Season</string>
+    <string-array name="vrc_seasons">
+        <item>Any</item>
+        <item>Toss Up</item>
+        <item>Sack Attack</item>
+        <item>Gateway</item>
+        <item>Round Up</item>
+        <item>Clean Sweep</item>
+        <item>Elevation></item>
+        <item>Bridge Battle</item>
+        <item>Skyrise</item>
+        <item>Nothing But Net</item>
+        <item>Starstruck</item>
+    </string-array>
+
+    <string name="country_prompt">Country</string>
+    <string-array name="countries">
+        <item>Any</item>
+        <item>United States</item>
+        <item>Canada</item>
+        <item>China</item>
+        <item>Colombia</item>
+        <item>Hong Kong</item>
+        <item>Mexico</item>
+        <item>New Zealand</item>
+        <item>Singapore</item>
+        <item>United Kingdom</item>
+        <item>Afghanistan</item>
+        <item>Aland Islands</item>
+        <item>Albania</item>
+        <item>Algeria</item>
+        <item>American Samoa</item>
+        <item>Andorra</item>
+        <item>Angola</item>
+        <item>Anguilla</item>
+        <item>Antarctica</item>
+        <item>Antigua and Barbuda</item>
+        <item>Argentina</item>
+        <item>Armenia</item>
+        <item>Aruba</item>
+        <item>Australia</item>
+        <item>Austria</item>
+        <item>Azerbaijan</item>
+        <item>Bahamas</item>
+        <item>Bahrain</item>
+        <item>Bangladesh</item>
+        <item>Barbados</item>
+        <item>Belarus</item>
+        <item>Belgium</item>
+        <item>Belize</item>
+        <item>Benin</item>
+        <item>Bermuda</item>
+        <item>Bhutan</item>
+        <item>Bolivia</item>
+        <item>Bosnia and Herzegovina</item>
+        <item>Botswana</item>
+        <item>Bouvet Island</item>
+        <item>Brazil</item>
+        <item>British Antarctic Territory</item>
+        <item>British Indian Ocean Territory</item>
+        <item>British Virgin Islands</item>
+        <item>Brunei</item>
+        <item>Bulgaria</item>
+        <item>Burkina Faso</item>
+        <item>Burundi</item>
+        <item>Cambodia</item>
+        <item>Cameroon</item>
+        <item>Canton and Enderbury Islands</item>
+        <item>Cape Verde</item>
+        <item>Cayman Islands</item>
+        <item>Central African Republic</item>
+        <item>Chad</item>
+        <item>Chile</item>
+        <item>Christmas Island</item>
+        <item>Cocos Islands</item>
+        <item>Comoros</item>
+        <item>Congo - Brazzaville</item>
+        <item>Congo - Kinshasa</item>
+        <item>Cook Islands</item>
+        <item>Costa Rica</item>
+        <item>Croatia</item>
+        <item>Cuba</item>
+        <item>Cyprus</item>
+        <item>Czech Republic</item>
+        <item>Denmark</item>
+        <item>Djibouti</item>
+        <item>Dominica</item>
+        <item>Dominican Republic</item>
+        <item>Dronning Maud Land</item>
+        <item>East Germany</item>
+        <item>East Timor</item>
+        <item>Ecuador</item>
+        <item>Egypt</item>
+        <item>El Salvador</item>
+        <item>Equatorial Guinea</item>
+        <item>Eritrea</item>
+        <item>Estonia</item>
+        <item>Ethiopia</item>
+        <item>Falkland Islands</item>
+        <item>Faroe Islands</item>
+        <item>Fiji</item>
+        <item>Finland</item>
+        <item>France</item>
+        <item>French Guiana</item>
+        <item>French Polynesia</item>
+        <item>French Southern and Antarctic Territories</item>
+        <item>French Southern Territories</item>
+        <item>Gabon</item>
+        <item>Gambia</item>
+        <item>Georgia</item>
+        <item>Germany</item>
+        <item>Ghana</item>
+        <item>Gibraltar</item>
+        <item>Greece</item>
+        <item>Greenland</item>
+        <item>Grenada</item>
+        <item>Guadeloupe</item>
+        <item>Guam</item>
+        <item>Guatemala</item>
+        <item>Guernsey</item>
+        <item>Guinea</item>
+        <item>Guinea-Bissau</item>
+        <item>Guyana</item>
+        <item>Haiti</item>
+        <item>Heard Island and McDonald Islands</item>
+        <item>Honduras</item>
+        <item>Hungary</item>
+        <item>Iceland</item>
+        <item>India</item>
+        <item>Indonesia</item>
+        <item>Iran</item>
+        <item>Iraq</item>
+        <item>Ireland</item>
+        <item>Isle of Man</item>
+        <item>Israel</item>
+        <item>Italy</item>
+        <item>Ivory Coast</item>
+        <item>Jamaica</item>
+        <item>Japan</item>
+        <item>Jersey</item>
+        <item>Johnston Island</item>
+        <item>Jordan</item>
+        <item>Kazakhstan</item>
+        <item>Kenya</item>
+        <item>Kiribati</item>
+        <item>Kuwait</item>
+        <item>Kyrgyzstan</item>
+        <item>Laos</item>
+        <item>Latvia</item>
+        <item>Lebanon</item>
+        <item>Lesotho</item>
+        <item>Liberia</item>
+        <item>Libya</item>
+        <item>Liechtenstein</item>
+        <item>Lithuania</item>
+        <item>Luxembourg</item>
+        <item>Macau</item>
+        <item>Macedonia</item>
+        <item>Madagascar</item>
+        <item>Malawi</item>
+        <item>Malaysia</item>
+        <item>Maldives</item>
+        <item>Mali</item>
+        <item>Malta</item>
+        <item>Marshall Islands</item>
+        <item>Martinique</item>
+        <item>Mauritania</item>
+        <item>Mauritius</item>
+        <item>Mayotte</item>
+        <item>Metropolitan France</item>
+        <item>Micronesia</item>
+        <item>Midway Islands</item>
+        <item>Moldova</item>
+        <item>Monaco</item>
+        <item>Mongolia</item>
+        <item>Montenegro</item>
+        <item>Montserrat</item>
+        <item>Morocco</item>
+        <item>Mozambique</item>
+        <item>Myanmar</item>
+        <item>Namibia</item>
+        <item>Nauru</item>
+        <item>Nepal</item>
+        <item>Netherlands</item>
+        <item>Netherlands Antilles</item>
+        <item>Neutral Zone</item>
+        <item>New Caledonia</item>
+        <item>Nicaragua</item>
+        <item>Niger</item>
+        <item>Nigeria</item>
+        <item>Niue</item>
+        <item>Norfolk Island</item>
+        <item>North Korea</item>
+        <item>North Vietnam</item>
+        <item>Northern Mariana Islands</item>
+        <item>Norway</item>
+        <item>Oman</item>
+        <item>Pacific Islands Trust Territory</item>
+        <item>Pakistan</item>
+        <item>Palau</item>
+        <item>Palestinian Territory</item>
+        <item>Panama</item>
+        <item>Panama Canal Zone</item>
+        <item>Papua New Guinea</item>
+        <item>Paraguay</item>
+        <item>People\'s Democratic Republic of Yemen</item>
+        <item>Peru</item>
+        <item>Philippines</item>
+        <item>Pitcairn</item>
+        <item>Poland</item>
+        <item>Portugal</item>
+        <item>Puerto Rico</item>
+        <item>Qatar</item>
+        <item>Reunion</item>
+        <item>Romania</item>
+        <item>Russia</item>
+        <item>Rwanda</item>
+        <item>Saint Barthélemy</item>
+        <item>Saint Helena</item>
+        <item>Saint Kitts and Nevis</item>
+        <item>Saint Lucia</item>
+        <item>Saint Martin</item>
+        <item>Saint Pierre and Miquelon</item>
+        <item>Saint Vincent and the Grenadines</item>
+        <item>Samoa</item>
+        <item>San Marino</item>
+        <item>Sao Tome and Principe</item>
+        <item>Saudi Arabia</item>
+        <item>Senegal</item>
+        <item>Serbia</item>
+        <item>Serbia and Montenegro</item>
+        <item>Seychelles</item>
+        <item>Sierra Leone</item>
+        <item>Slovakia</item>
+        <item>Slovenia</item>
+        <item>Solomon Islands</item>
+        <item>Somalia</item>
+        <item>South Africa</item>
+        <item>South Georgia and the South Sandwich Islands</item>
+        <item>South Korea</item>
+        <item>Spain</item>
+        <item>Sri Lanka</item>
+        <item>Sudan</item>
+        <item>Suriname</item>
+        <item>Svalbard and Jan Mayen</item>
+        <item>Swaziland</item>
+        <item>Sweden</item>
+        <item>Switzerland</item>
+        <item>Syria</item>
+        <item>Taiwan</item>
+        <item>Tajikistan</item>
+        <item>Tanzania</item>
+        <item>Thailand</item>
+        <item>Togo</item>
+        <item>Tokelau</item>
+        <item>Tonga</item>
+        <item>Trinidad and Tobago</item>
+        <item>Tunisia</item>
+        <item>Turkey</item>
+        <item>Turkmenistan</item>
+        <item>Turks and Caicos Islands</item>
+        <item>Tuvalu</item>
+        <item>U.S. Miscellaneous Pacific Islands</item>
+        <item>U.S. Virgin Islands</item>
+        <item>Uganda</item>
+        <item>Ukraine</item>
+        <item>Union of Soviet Socialist Republics</item>
+        <item>United Arab Emirates</item>
+        <item>United States Minor Outlying Islands</item>
+        <item>Unknown or Invalid Region</item>
+        <item>Uruguay</item>
+        <item>Uzbekistan</item>
+        <item>Vanuatu</item>
+        <item>Vatican</item>
+        <item>Venezuela</item>
+        <item>Vietnam</item>
+        <item>Wake Island</item>
+        <item>Wallis and Futuna</item>
+        <item>Western Sahara</item>
+        <item>Yemen</item>
+        <item>Zambia</item>
+        <item>Zimbabwe</item>
+    </string-array>
+
+    <string name="region_prompt">State / Region</string>
+    <string-array name="regions">
+        <item>Any</item>
+        <item>Alabama</item>
+        <item>Alaska</item>
+        <item>American Samoa</item>
+        <item>Arizona</item>
+        <item>Arkansas</item>
+        <item>Armed Forces Africa</item>
+        <item>Armed Forces Americas</item>
+        <item>Armed Forces Canada</item>
+        <item>Armed Forces Europe</item>
+        <item>Armed Forces Middle East</item>
+        <item>Armed Forces Pacific</item>
+        <item>California</item>
+        <item>Colorado</item>
+        <item>Connecticut</item>
+        <item>Delaware</item>
+        <item>District of Columbia</item>
+        <item>Federated States Of Micronesia</item>
+        <item>Florida</item>
+        <item>Georgia</item>
+        <item>Guam</item>
+        <item>Hawaii</item>
+        <item>Idaho</item>
+        <item>Illinois</item>
+        <item>Indiana</item>
+        <item>Iowa</item>
+        <item>Kansas</item>
+        <item>Kentucky</item>
+        <item>Louisiana</item>
+        <item>Maine</item>
+        <item>Marshall Islands</item>
+        <item>Maryland</item>
+        <item>Massachusetts</item>
+        <item>Michigan</item>
+        <item>Minnesota</item>
+        <item>Mississippi</item>
+        <item>Missouri</item>
+        <item>Montana</item>
+        <item>Nebraska</item>
+        <item>Nevada</item>
+        <item>New Hampshire</item>
+        <item>New Jersey</item>
+        <item>New Mexico</item>
+        <item>New York</item>
+        <item>North Carolina</item>
+        <item>North Dakota</item>
+        <item>Northern Mariana Islands</item>
+        <item>Ohio</item>
+        <item>Oklahoma</item>
+        <item>Oregon</item>
+        <item>Palau</item>
+        <item>Pennsylvania</item>
+        <item>Puerto Rico</item>
+        <item>Rhode Island</item>
+        <item>South Carolina</item>
+        <item>South Dakota</item>
+        <item>Tennessee</item>
+        <item>Texas</item>
+        <item>Utah</item>
+        <item>Vermont</item>
+        <item>Virgin Islands</item>
+        <item>Virginia</item>
+        <item>Washington</item>
+        <item>West Virginia</item>
+        <item>Wisconsin</item>
+        <item>Wyoming</item>
+        <item>Aguascalientes</item>
+        <item>Baja California</item>
+        <item>Baja California Sur</item>
+        <item>Campeche</item>
+        <item>Chiapas</item>
+        <item>Chihuahua</item>
+        <item>Coahuila</item>
+        <item>Colima</item>
+        <item>Federal District</item>
+        <item>Durango</item>
+        <item>Guanajuato</item>
+        <item>Guerrero</item>
+        <item>Hidalgo</item>
+        <item>Jalisco</item>
+        <item>Mexico State</item>
+        <item>Michoacán</item>
+        <item>Morelos</item>
+        <item>Nayarit</item>
+        <item>Nuevo León</item>
+        <item>Oaxaca</item>
+        <item>Puebla</item>
+        <item>Querétaro</item>
+        <item>Quintana Roo</item>
+        <item>San Luis Potosí</item>
+        <item>Sinaloa</item>
+        <item>Sonora</item>
+        <item>Tabasco</item>
+        <item>Tamaulipas</item>
+        <item>Tlaxcala</item>
+        <item>Veracruz</item>
+        <item>Yucatán</item>
+        <item>Zacatecas</item>
+        <item>Ain</item>
+        <item>Aisne</item>
+        <item>Allier</item>
+        <item>Alpes-de-Haute-Provence</item>
+        <item>Hautes-Alpes</item>
+        <item>Alpes-Maritimes</item>
+        <item>Ardèche</item>
+        <item>Ardennes</item>
+        <item>Ariège</item>
+        <item>Aube</item>
+        <item>Aude</item>
+        <item>Aveyron</item>
+        <item>Bouches-du-Rhône</item>
+        <item>Calvados</item>
+        <item>Cantal</item>
+        <item>Charente</item>
+        <item>Charente-Maritime</item>
+        <item>Cher</item>
+        <item>Corrèze</item>
+        <item>Corse-du-Sud</item>
+        <item>Haute-Corse</item>
+        <item>Côte-d\'Or</item>
+        <item>Côtes-d\'Armor</item>
+        <item>Creuse</item>
+        <item>Dordogne</item>
+        <item>Doubs</item>
+        <item>Drôme</item>
+        <item>Eure</item>
+        <item>Eure-et-Loir</item>
+        <item>Finistère</item>
+        <item>Gard</item>
+        <item>Haute-Garonne</item>
+        <item>Gers</item>
+        <item>Gironde</item>
+        <item>Hérault</item>
+        <item>Ille-et-Vilaine</item>
+        <item>Indre</item>
+        <item>Indre-et-Loire</item>
+        <item>Isère</item>
+        <item>Jura</item>
+        <item>Landes</item>
+        <item>Loir-et-Cher</item>
+        <item>Loire</item>
+        <item>Haute-Loire</item>
+        <item>Loire-Atlantique</item>
+        <item>Loiret</item>
+        <item>Lot</item>
+        <item>Lot-et-Garonne</item>
+        <item>Lozère</item>
+        <item>Maine-et-Loire</item>
+        <item>Manche</item>
+        <item>Marne</item>
+        <item>Haute-Marne</item>
+        <item>Mayenne</item>
+        <item>Meurthe-et-Moselle</item>
+        <item>Meuse</item>
+        <item>Morbihan</item>
+        <item>Moselle</item>
+        <item>Nièvre</item>
+        <item>Nord</item>
+        <item>Oise</item>
+        <item>Orne</item>
+        <item>Pas-de-Calais</item>
+        <item>Puy-de-Dôme</item>
+        <item>Pyrénées-Atlantiques</item>
+        <item>Hautes-Pyrénées</item>
+        <item>Pyrénées-Orientales</item>
+        <item>Bas-Rhin</item>
+        <item>Haut-Rhin</item>
+        <item>Rhône</item>
+        <item>Haute-Saône</item>
+        <item>Saône-et-Loire</item>
+        <item>Sarthe</item>
+        <item>Savoie</item>
+        <item>Haute-Savoie</item>
+        <item>Paris</item>
+        <item>Seine-Maritime</item>
+        <item>Seine-et-Marne</item>
+        <item>Yvelines</item>
+        <item>Deux-Sèvres</item>
+        <item>Somme</item>
+        <item>Tarn</item>
+        <item>Tarn-et-Garonne</item>
+        <item>Var</item>
+        <item>Vaucluse</item>
+        <item>Vendée</item>
+        <item>Vienne</item>
+        <item>Haute-Vienne</item>
+        <item>Vosges</item>
+        <item>Yonne</item>
+        <item>Territoire-de-Belfort</item>
+        <item>Essonne</item>
+        <item>Hauts-de-Seine</item>
+        <item>Seine-Saint-Denis</item>
+        <item>Val-de-Marne</item>
+        <item>Val-d\'Oise</item>
+        <item>A Coruña</item>
+        <item>Alava</item>
+        <item>Albacete</item>
+        <item>Alicante</item>
+        <item>Almeria</item>
+        <item>Asturias</item>
+        <item>Avila</item>
+        <item>Badajoz</item>
+        <item>Baleares</item>
+        <item>Barcelona</item>
+        <item>Burgos</item>
+        <item>Caceres</item>
+        <item>Cadiz</item>
+        <item>Cantabria</item>
+        <item>Castellon</item>
+        <item>Ceuta</item>
+        <item>Ciudad Real</item>
+        <item>Cordoba</item>
+        <item>Cuenca</item>
+        <item>Girona</item>
+        <item>Granada</item>
+        <item>Guadalajara</item>
+        <item>Guipuzcoa</item>
+        <item>Huelva</item>
+        <item>Huesca</item>
+        <item>Jaen</item>
+        <item>La Rioja</item>
+        <item>Las Palmas</item>
+        <item>Leon</item>
+        <item>Lleida</item>
+        <item>Lugo</item>
+        <item>Madrid</item>
+        <item>Malaga</item>
+        <item>Melilla</item>
+        <item>Murcia</item>
+        <item>Navarra</item>
+        <item>Ourense</item>
+        <item>Palencia</item>
+        <item>Pontevedra</item>
+        <item>Salamanca</item>
+        <item>Santa Cruz de Tenerife</item>
+        <item>Segovia</item>
+        <item>Sevilla</item>
+        <item>Soria</item>
+        <item>Tarragona</item>
+        <item>Teruel</item>
+        <item>Toledo</item>
+        <item>Valencia</item>
+        <item>Valladolid</item>
+        <item>Vizcaya</item>
+        <item>Zamora</item>
+        <item>Zaragoza</item>
+        <item>Niedersachsen</item>
+        <item>Baden-Württemberg</item>
+        <item>Bayern</item>
+        <item>Berlin</item>
+        <item>Brandenburg</item>
+        <item>Bremen</item>
+        <item>Hamburg</item>
+        <item>Hessen</item>
+        <item>Mecklenburg-Vorpommern</item>
+        <item>Nordrhein-Westfalen</item>
+        <item>Rheinland-Pfalz</item>
+        <item>Saarland</item>
+        <item>Sachsen</item>
+        <item>Sachsen-Anhalt</item>
+        <item>Schleswig-Holstein</item>
+        <item>Thüringen</item>
+        <item>Anhui</item>
+        <item>Beijing</item>
+        <item>Chongqing</item>
+        <item>Fujian</item>
+        <item>Gansu</item>
+        <item>Guangdong</item>
+        <item>Guangxi</item>
+        <item>Guizhou</item>
+        <item>Hainan</item>
+        <item>Hebei</item>
+        <item>Heilongjiang</item>
+        <item>Henan</item>
+        <item>Hubei</item>
+        <item>Hunan</item>
+        <item>Jiangsu</item>
+        <item>Jiangxi</item>
+        <item>Jilin</item>
+        <item>Liaoning</item>
+        <item>Neimenggu</item>
+        <item>Ningxia</item>
+        <item>Qinghai</item>
+        <item>Shaanxi</item>
+        <item>Shandong</item>
+        <item>Shanghai</item>
+        <item>Shanxi</item>
+        <item>Sichuan</item>
+        <item>Tianjin</item>
+        <item>Xinjiang</item>
+        <item>Xizang</item>
+        <item>Yunnan</item>
+        <item>Zhejiang</item>
+        <item>Aargau</item>
+        <item>Appenzell Innerrhoden</item>
+        <item>Appenzell Ausserrhoden</item>
+        <item>Bern</item>
+        <item>Basel-Landschaft</item>
+        <item>Basel-Stadt</item>
+        <item>Freiburg</item>
+        <item>Genf</item>
+        <item>Glarus</item>
+        <item>Graubünden</item>
+        <item>Jura</item>
+        <item>Luzern</item>
+        <item>Neuenburg</item>
+        <item>Nidwalden</item>
+        <item>Obwalden</item>
+        <item>St. Gallen</item>
+        <item>Schaffhausen</item>
+        <item>Solothurn</item>
+        <item>Schwyz</item>
+        <item>Thurgau</item>
+        <item>Tessin</item>
+        <item>Uri</item>
+        <item>Waadt</item>
+        <item>Wallis</item>
+        <item>Zug</item>
+        <item>Zürich</item>
+        <item>Alberta</item>
+        <item>British Columbia</item>
+        <item>Manitoba</item>
+        <item>Newfoundland</item>
+        <item>New Brunswick</item>
+        <item>Nova Scotia</item>
+        <item>Northwest Territories</item>
+        <item>Nunavut</item>
+        <item>Ontario</item>
+        <item>Prince Edward Island</item>
+        <item>Quebec</item>
+        <item>Saskatchewan</item>
+        <item>Yukon Territory</item>
+        <item>Wien</item>
+        <item>Niederösterreich</item>
+        <item>Oberösterreich</item>
+        <item>Salzburg</item>
+        <item>Kärnten</item>
+        <item>Steiermark</item>
+        <item>Tirol</item>
+        <item>Burgenland</item>
+        <item>Voralberg</item>
+    </string-array>
 </resources>

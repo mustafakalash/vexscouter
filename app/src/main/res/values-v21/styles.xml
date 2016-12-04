@@ -9,6 +9,7 @@
 
         <item name="actionBarStyle">@style/AppTheme.ActionBar</item>
         <item name="actionBarTheme">@style/AppTheme.ActionBar</item>
+        <item name="android:navigationBarColor">@color/colorPrimary</item>
     </style>
 
     <style name="AppTheme.ActionBar" parent="@style/Widget.AppCompat.Light.ActionBar">

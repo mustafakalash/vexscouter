@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:defaultValue="Any"
+        android:title="@string/season_prompt"
+        android:entries="@array/vrc_seasons"
+        android:entryValues="@array/vrc_seasons"
+        android:key="filter_season" />
+    <ListPreference
+        android:defaultValue="Any"
+        android:title="@string/country_prompt"
+        android:entries="@array/countries"
+        android:entryValues="@array/countries"
+        android:key="filter_country" />
+    <ListPreference
+        android:defaultValue="Any"
+        android:title="@string/region_prompt"
+        android:entries="@array/regions"
+        android:entryValues="@array/regions"
+        android:key="filter_region" />
+</PreferenceScreen>
