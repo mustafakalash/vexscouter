@@ -632,4 +632,23 @@
         <item>Burgenland</item>
         <item>Voralberg</item>
     </string-array>
+
+    <string name="no_results">No results were found.</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="matches_tab">Matches</string>
+    <string name="rankings_tab">Rankings</string>
+
+    <string name="rank_header">Rank</string>
+    <string name="team_header">Team</string>
+    <string name="wp_header">WP</string>
+    <string name="ap_header">AP</string>
+    <string name="trsp_header">TRSP</string>
+    <string name="ccwm_header">CCWM</string>
+
+    <string name="team1_header">Team 1</string>
+    <string name="team2_header">Team 2</string>
+    <string name="team3_header">Team 3</string>
+    <string name="score_header">Score</string>
 </resources>
