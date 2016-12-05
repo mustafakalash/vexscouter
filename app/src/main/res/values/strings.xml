@@ -651,4 +651,8 @@
     <string name="team2_header">Team 2</string>
     <string name="team3_header">Team 3</string>
     <string name="score_header">Score</string>
+
+    <string name="vrating_label">vRating:</string>
+    <string name="notes_label">Notes:</string>
+    <string name="save_button">Save</string>
 </resources>
