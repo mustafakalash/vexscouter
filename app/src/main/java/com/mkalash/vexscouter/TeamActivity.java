@@ -31,8 +31,6 @@ import java.util.ArrayList;
 public class TeamActivity extends AppCompatActivity {
 
     private String teamNumber;
-    private String eventSKU;
-    private String eventName;
     private RetrieveRating retrieveRatingTask = new RetrieveRating();
 
     class RetrieveRating extends AsyncTask<RatingBar, Integer, float[]> {
@@ -48,8 +46,9 @@ public class TeamActivity extends AppCompatActivity {
         protected float[] doInBackground(RatingBar... params) {
             this.ratingBar = params[0];
             float[] returnValue = new float[2];
+
             try {
-                String urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&team=" + teamNumber;
+                String urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&program=VRC&nodata=true";
                 StringBuilder json = new StringBuilder();
                 URL url = new URL(urlString);
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -65,13 +64,11 @@ public class TeamActivity extends AppCompatActivity {
                 } finally {
                     in.close();
                 }
-                JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
-                JSONObject team = result.getJSONObject(0);
-                float vRating = (float) team.getInt("vrating_rank");
-                returnValue[0] = vRating;
+                int size = new JSONObject(json.toString()).getInt("size");
+                returnValue[1] = (float) size;
                 publishProgress(50);
 
-                urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&program=VRC&nodata=true";
+                urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&team=" + teamNumber;
                 json = new StringBuilder();
                 url = new URL(urlString);
                 in = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -87,10 +84,15 @@ public class TeamActivity extends AppCompatActivity {
                 } finally {
                     in.close();
                 }
-                int size = new JSONObject(json.toString()).getInt("size");
+                JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
+                float vRating = (float) size;
+                if(result.length() == 1) {
+                    JSONObject team = result.getJSONObject(0);
+                    vRating = (float) team.getInt("vrating_rank");
+                }
+                returnValue[0] = vRating;
                 publishProgress(100);
 
-                returnValue[1] = (float) size;
                 return returnValue;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -120,8 +122,6 @@ public class TeamActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         teamNumber = intent.getStringExtra("TEAM_NUM");
-        eventSKU = intent.getStringExtra("EVENT_SKU");
-        eventName = intent.getStringExtra("EVENT_NAME");
         setTitle(teamNumber);
 
         ProgressBar progress = (ProgressBar) findViewById(R.id.team_progress);

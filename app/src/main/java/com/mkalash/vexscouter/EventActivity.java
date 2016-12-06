@@ -31,7 +31,7 @@ import java.util.ArrayList;
 
 public class EventActivity extends AppCompatActivity {
 
-    private String name;
+    private static String name;
     private static String sku;
 
     static class Skill {
@@ -197,8 +197,6 @@ public class EventActivity extends AppCompatActivity {
         public void onClick(View view) {
             Intent intent = new Intent(view.getContext(), TeamActivity.class);
             intent.putExtra("TEAM_NUM", ((Button) view).getText());
-            intent.putExtra("EVENT_SKU", sku);
-            intent.putExtra("EVENT_NAME", name);
             view.getContext().startActivity(intent);
         }
     }
@@ -470,20 +468,51 @@ public class EventActivity extends AppCompatActivity {
                 } finally {
                     in.close();
                 }
-                JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
-                for(int i = 0; i < result.length(); i++) {
-                    JSONObject rank = result.getJSONObject(i);
-                    String team = rank.getString("team");
-                    int rankNum = rank.getInt("rank");
-                    int wp = rank.getInt("wp");
-                    int ap = rank.getInt("ap");
-                    int trsp = rank.getInt("trsp");
-                    double ccwm = rank.getDouble("ccwm");
-                    Rank rankObj = new Rank(team, rankNum, wp, ap, trsp, ccwm);
-                    rankings.add(rankObj);
-                    publishProgress((int) (((i + 1) / (float) result.length()) * 100));
-                    if(isCancelled()) {
-                        break;
+                JSONObject jsonObject = new JSONObject(json.toString());
+                if(jsonObject.getInt("size") == 0) {
+                    urlString = "https://api.vexdb.io/v1/get_teams?sku=" + sku;
+                    json = new StringBuilder();
+                    url = new URL(urlString);
+                    in = new BufferedReader(new InputStreamReader(url.openStream()));
+                    try {
+                        String str;
+                        int i = 1;
+                        while ((str = in.readLine()) != null) {
+                            json.append(str);
+                            if(isCancelled()) {
+                                break;
+                            }
+                        }
+                    } finally {
+                        in.close();
+                    }
+                    JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
+                    for (int i = 0; i < result.length(); i++) {
+                        JSONObject rank = result.getJSONObject(i);
+                        String team = rank.getString("number");
+                        Rank rankObj = new Rank(team, i, 0, 0, 0, 0);
+                        rankings.add(rankObj);
+                        publishProgress((int) (((i + 1) / (float) result.length()) * 100));
+                        if (isCancelled()) {
+                            break;
+                        }
+                    }
+                } else {
+                    JSONArray result = jsonObject.getJSONArray("result");
+                    for (int i = 0; i < result.length(); i++) {
+                        JSONObject rank = result.getJSONObject(i);
+                        String team = rank.getString("team");
+                        int rankNum = rank.getInt("rank");
+                        int wp = rank.getInt("wp");
+                        int ap = rank.getInt("ap");
+                        int trsp = rank.getInt("trsp");
+                        double ccwm = rank.getDouble("ccwm");
+                        Rank rankObj = new Rank(team, rankNum, wp, ap, trsp, ccwm);
+                        rankings.add(rankObj);
+                        publishProgress((int) (((i + 1) / (float) result.length()) * 100));
+                        if (isCancelled()) {
+                            break;
+                        }
                     }
                 }
                 return rankings;
@@ -652,62 +681,62 @@ public class EventActivity extends AppCompatActivity {
                 emptyPage.setText(R.string.no_results);
                 skillsTable.addView(emptyPage);
                 skillsTable.setBackgroundColor(whiteColor);
-            }
-
-            int[] tableOrder = {2, 0, 1};
-            for(int i : tableOrder) {
-                TextView tableName = new TextView(skillsTable.getContext());
-                tableName.setBackgroundColor(whiteColor);
-                tableName.setLayoutParams(skillRowParams);
-                switch(i) {
-                    default:
-                    case 2:
-                        tableName.setText(skillsTable.getContext().getString(R.string.robot_skills));
-                        break;
-                    case 1:
-                        tableName.setText(skillsTable.getContext().getString(R.string.auton_skills));
-                        break;
-                    case 0:
-                        tableName.setText(skillsTable.getContext().getString(R.string.driver_skills));
-                        break;
-                }
-                skillsTable.addView(tableName);
-
-                for (Skill skill : skills) {
-                    if(skill.getType() != i) {
-                        continue;
+            } else {
+                int[] tableOrder = {2, 0, 1};
+                for (int i : tableOrder) {
+                    TextView tableName = new TextView(skillsTable.getContext());
+                    tableName.setBackgroundColor(whiteColor);
+                    tableName.setLayoutParams(skillRowParams);
+                    switch (i) {
+                        default:
+                        case 2:
+                            tableName.setText(skillsTable.getContext().getString(R.string.robot_skills));
+                            break;
+                        case 1:
+                            tableName.setText(skillsTable.getContext().getString(R.string.auton_skills));
+                            break;
+                        case 0:
+                            tableName.setText(skillsTable.getContext().getString(R.string.driver_skills));
+                            break;
                     }
+                    skillsTable.addView(tableName);
 
-                    LinearLayout skillRow = new LinearLayout(skillsTable.getContext());
-                    skillRow.setOrientation(LinearLayout.HORIZONTAL);
-                    skillRow.setLayoutParams(skillRowParams);
+                    for (Skill skill : skills) {
+                        if (skill.getType() != i) {
+                            continue;
+                        }
 
-                    TextView rank = new TextView(skillsTable.getContext());
-                    rank.setText(Integer.toString(skill.getRank()));
-                    rank.setBackgroundColor(whiteColor);
-                    rank.setLayoutParams(skillColParams);
-                    skillRow.addView(rank);
+                        LinearLayout skillRow = new LinearLayout(skillsTable.getContext());
+                        skillRow.setOrientation(LinearLayout.HORIZONTAL);
+                        skillRow.setLayoutParams(skillRowParams);
 
-                    Button team = new Button(skillsTable.getContext());
-                    team.setText(skill.getTeam());
-                    team.setBackgroundColor(whiteColor);
-                    team.setLayoutParams(skillColParams);
-                    team.setOnClickListener(teamClickListener);
-                    skillRow.addView(team);
+                        TextView rank = new TextView(skillsTable.getContext());
+                        rank.setText(Integer.toString(skill.getRank()));
+                        rank.setBackgroundColor(whiteColor);
+                        rank.setLayoutParams(skillColParams);
+                        skillRow.addView(rank);
 
-                    TextView attempts = new TextView(skillsTable.getContext());
-                    attempts.setText(Integer.toString(skill.getAttempts()));
-                    attempts.setBackgroundColor(whiteColor);
-                    attempts.setLayoutParams(skillColParams);
-                    skillRow.addView(attempts);
+                        Button team = new Button(skillsTable.getContext());
+                        team.setText(skill.getTeam());
+                        team.setBackgroundColor(whiteColor);
+                        team.setLayoutParams(skillColParams);
+                        team.setOnClickListener(teamClickListener);
+                        skillRow.addView(team);
 
-                    TextView score = new TextView(skillsTable.getContext());
-                    score.setText(Integer.toString(skill.getScore()));
-                    score.setBackgroundColor(whiteColor);
-                    score.setLayoutParams(skillColParams);
-                    skillRow.addView(score);
+                        TextView attempts = new TextView(skillsTable.getContext());
+                        attempts.setText(Integer.toString(skill.getAttempts()));
+                        attempts.setBackgroundColor(whiteColor);
+                        attempts.setLayoutParams(skillColParams);
+                        skillRow.addView(attempts);
 
-                    skillsTable.addView(skillRow);
+                        TextView score = new TextView(skillsTable.getContext());
+                        score.setText(Integer.toString(skill.getScore()));
+                        score.setBackgroundColor(whiteColor);
+                        score.setLayoutParams(skillColParams);
+                        skillRow.addView(score);
+
+                        skillsTable.addView(skillRow);
+                    }
                 }
             }
 
