@@ -3,6 +3,7 @@ package com.mkalash.vexscouter;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.usage.UsageEvents;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -25,6 +26,7 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -34,12 +36,45 @@ import java.util.ArrayList;
 public class EventActivity extends AppCompatActivity {
 
     private String name;
-    private String sku;
-    
-    private RetrieveMatches retrieveMatchesTask = new RetrieveMatches();
-    private RetrieveRankings retrieveRankingsTask = new RetrieveRankings();
+    private static String sku;
 
-    class Rank {
+    static class Skill {
+        private String team;
+        private int rank;
+        private int attempts;
+        private int score;
+        private int type;
+
+        public Skill(String team, int rank, int attempts, int score, int type) {
+            this.team = team;
+            this.rank = rank;
+            this.attempts = attempts;
+            this.score = score;
+            this.type = type;
+        }
+
+        public String getTeam() {
+            return team;
+        }
+
+        public int getRank() {
+            return rank;
+        }
+
+        public int getAttempts() {
+            return attempts;
+        }
+
+        public int getScore() {
+            return score;
+        }
+
+        public int getType() {
+            return type;
+        }
+    }
+
+    static class Rank {
         private String team;
         private int rank;
         private int wp;
@@ -81,7 +116,7 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    class Match {
+    static class Match {
         private String red1;
         private String red2;
         private String red3;
@@ -153,18 +188,20 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    class TeamClickListener implements Button.OnClickListener {
+    static class TeamClickListener implements Button.OnClickListener {
+        private boolean name;
+
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(EventActivity.this, TeamActivity.class);
+            Intent intent = new Intent(view.getContext(), TeamActivity.class);
             intent.putExtra("TEAM_NUM", ((Button) view).getText());
             intent.putExtra("EVENT_SKU", sku);
             intent.putExtra("EVENT_NAME", name);
-            startActivity(intent);
+            view.getContext().startActivity(intent);
         }
     }
 
-    class RetrieveMatches extends AsyncTask<LinearLayout, Integer, ArrayList<Match>> {
+    static class RetrieveMatches extends AsyncTask<LinearLayout, Integer, ArrayList<Match>> {
 
         private ProgressBar progressBar;
         private LinearLayout matchTable;
@@ -229,11 +266,11 @@ public class EventActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<Match> matches) {
-            int redResult = ResourcesCompat.getColor(getResources(), R.color.redResult, null);
-            int redResultOut = ResourcesCompat.getColor(getResources(), R.color.redResultOut, null);
-            int blueResult = ResourcesCompat.getColor(getResources(), R.color.blueResult, null);
-            int blueResultOut = ResourcesCompat.getColor(getResources(), R.color.blueResultOut, null);
-            int whiteColor = ResourcesCompat.getColor(getResources(), R.color.white, null);
+            int redResult = ResourcesCompat.getColor(matchTable.getResources(), R.color.redResult, null);
+            int redResultOut = ResourcesCompat.getColor(matchTable.getResources(), R.color.redResultOut, null);
+            int blueResult = ResourcesCompat.getColor(matchTable.getResources(), R.color.blueResult, null);
+            int blueResultOut = ResourcesCompat.getColor(matchTable.getResources(), R.color.blueResultOut, null);
+            int whiteColor = ResourcesCompat.getColor(matchTable.getResources(), R.color.white, null);
 
             LinearLayout.LayoutParams redRowParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -376,7 +413,7 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    class RetrieveRankings extends AsyncTask<LinearLayout, Integer, ArrayList<Rank>> {
+    static class RetrieveRankings extends AsyncTask<LinearLayout, Integer, ArrayList<Rank>> {
 
         private ProgressBar progressBar;
         private LinearLayout rankingTable;
@@ -437,8 +474,8 @@ public class EventActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<Rank> rankings) {
 
-            int accentColor = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
-            int whiteColor = ResourcesCompat.getColor(getResources(), R.color.white, null);
+            int accentColor = ResourcesCompat.getColor(rankingTable.getResources(), R.color.colorAccent, null);
+            int whiteColor = ResourcesCompat.getColor(rankingTable.getResources(), R.color.white, null);
 
             LinearLayout.LayoutParams rankRowParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -501,6 +538,150 @@ public class EventActivity extends AppCompatActivity {
                 rankRow.addView(ccwm);
 
                 rankingTable.addView(rankRow);
+            }
+
+            progressBar.setVisibility(View.GONE);
+            progressBar.setProgress(0);
+        }
+    }
+
+    static class RetrieveSkills extends AsyncTask<LinearLayout, Integer, ArrayList<Skill>> {
+
+        private ProgressBar progressBar;
+        private LinearLayout skillsTable;
+        ArrayList<Skill> skills = new ArrayList<Skill>();
+
+        public void setProgressBar(ProgressBar bar) {
+            this.progressBar = bar;
+        }
+
+        @Override
+        protected ArrayList<Skill> doInBackground(LinearLayout... params) {
+            this.skillsTable = params[0];
+            try {
+                String urlString = "https://api.vexdb.io/v1/get_skills?sku=" + sku;
+                StringBuilder json = new StringBuilder();
+                URL url = new URL(urlString);
+                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+                try {
+                    String str;
+                    int i = 1;
+                    while ((str = in.readLine()) != null) {
+                        json.append(str);
+                        if(isCancelled()) {
+                            break;
+                        }
+                    }
+                } finally {
+                    in.close();
+                }
+                JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
+                for(int i = 0; i < result.length(); i++) {
+                    JSONObject skill = result.getJSONObject(i);
+                    String team = skill.getString("team");
+                    int rank = skill.getInt("rank");
+                    int attempts = skill.getInt("attempts");
+                    int score = skill.getInt("score");
+                    int type = skill.getInt("type");
+
+                    Skill skillObj = new Skill(team, rank, attempts, score, type);
+                    skills.add(skillObj);
+                    publishProgress((int) (((i + 1) / (float) result.length()) * 100));
+                    if(isCancelled()) {
+                        break;
+                    }
+                }
+                return skills;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        @Override
+        protected void onProgressUpdate(Integer... progress) {
+            progressBar.setProgress(progress[0]);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Skill> skills) {
+
+            int accentColor = ResourcesCompat.getColor(skillsTable.getResources(), R.color.colorAccent, null);
+            int whiteColor = ResourcesCompat.getColor(skillsTable.getResources(), R.color.white, null);
+
+            LinearLayout.LayoutParams skillRowParams =
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            skillRowParams.setMargins(0, 0, 0, 2);
+
+            LinearLayout.LayoutParams skillColParams =
+                    new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
+            skillColParams.setMargins(2, 0, 2, 0);
+            skillColParams.weight = 1;
+
+            TeamClickListener teamClickListener = new TeamClickListener();
+
+            if(skills.size() == 0) {
+                TextView emptyPage = new TextView(skillsTable.getContext());
+                emptyPage.setText(R.string.no_results);
+                skillsTable.addView(emptyPage);
+                skillsTable.setBackgroundColor(whiteColor);
+            }
+
+            int[] tableOrder = {2, 0, 1};
+            for(int i : tableOrder) {
+                TextView tableName = new TextView(skillsTable.getContext());
+                tableName.setBackgroundColor(whiteColor);
+                tableName.setLayoutParams(skillRowParams);
+                switch(i) {
+                    default:
+                    case 2:
+                        tableName.setText(skillsTable.getContext().getString(R.string.robot_skills));
+                        break;
+                    case 1:
+                        tableName.setText(skillsTable.getContext().getString(R.string.auton_skills));
+                        break;
+                    case 0:
+                        tableName.setText(skillsTable.getContext().getString(R.string.driver_skills));
+                        break;
+                }
+                skillsTable.addView(tableName);
+
+                for (Skill skill : skills) {
+                    if(skill.getType() != i) {
+                        continue;
+                    }
+
+                    LinearLayout skillRow = new LinearLayout(skillsTable.getContext());
+                    skillRow.setOrientation(LinearLayout.HORIZONTAL);
+                    skillRow.setLayoutParams(skillRowParams);
+
+                    TextView rank = new TextView(skillsTable.getContext());
+                    rank.setText(Integer.toString(skill.getRank()));
+                    rank.setBackgroundColor(whiteColor);
+                    rank.setLayoutParams(skillColParams);
+                    skillRow.addView(rank);
+
+                    Button team = new Button(skillsTable.getContext());
+                    team.setText(skill.getTeam());
+                    team.setBackgroundColor(whiteColor);
+                    team.setLayoutParams(skillColParams);
+                    team.setOnClickListener(teamClickListener);
+                    skillRow.addView(team);
+
+                    TextView attempts = new TextView(skillsTable.getContext());
+                    attempts.setText(Integer.toString(skill.getAttempts()));
+                    attempts.setBackgroundColor(whiteColor);
+                    attempts.setLayoutParams(skillColParams);
+                    skillRow.addView(attempts);
+
+                    TextView score = new TextView(skillsTable.getContext());
+                    score.setText(Integer.toString(skill.getScore()));
+                    score.setBackgroundColor(whiteColor);
+                    score.setLayoutParams(skillColParams);
+                    skillRow.addView(score);
+
+                    skillsTable.addView(skillRow);
+                }
             }
 
             progressBar.setVisibility(View.GONE);
@@ -579,8 +760,9 @@ public class EventActivity extends AppCompatActivity {
             LinearLayout fragmentTable = (LinearLayout) rootView.findViewById(R.id.fragment_event_table);
             LinearLayout fragmentTableHeader = (LinearLayout) rootView.findViewById(R.id.fragment_event_table_header);
 
-            RetrieveRankings retrieveRankingsTask = ((EventActivity) container.getContext()).retrieveRankingsTask;
-            RetrieveMatches retrieveMatchesTask = ((EventActivity) container.getContext()).retrieveMatchesTask;
+            RetrieveRankings retrieveRankingsTask = new RetrieveRankings();
+            RetrieveMatches retrieveMatchesTask = new RetrieveMatches();
+            RetrieveSkills retrieveSkillsTask = new RetrieveSkills();
 
             LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT);
             headerParams.setMargins(2, 0, 2, 5);
@@ -663,6 +845,37 @@ public class EventActivity extends AppCompatActivity {
                     retrieveMatchesTask.setProgressBar(fragmentProgress);
                     retrieveMatchesTask.execute(fragmentTable);
                     break;
+                case 3:
+                    TextView skillsRankHeader = new TextView(fragmentTableHeader.getContext());
+                    skillsRankHeader.setText(getString(R.string.rank_header));
+                    skillsRankHeader.setBackgroundColor(whiteColor);
+                    skillsRankHeader.setLayoutParams(headerParams);
+                    fragmentTableHeader.addView(skillsRankHeader);
+
+                    TextView skillsTeamHeader = new TextView(fragmentTableHeader.getContext());
+                    skillsTeamHeader.setText(getString(R.string.team_header));
+                    skillsTeamHeader.setBackgroundColor(whiteColor);
+                    skillsTeamHeader.setLayoutParams(headerParams);
+                    fragmentTableHeader.addView(skillsTeamHeader);
+
+                    TextView attemptsHeader = new TextView(fragmentTableHeader.getContext());
+                    attemptsHeader.setText(getString(R.string.attempts));
+                    attemptsHeader.setBackgroundColor(whiteColor);
+                    attemptsHeader.setLayoutParams(headerParams);
+                    fragmentTableHeader.addView(attemptsHeader);
+
+                    TextView skillsScoreHeader = new TextView(fragmentTableHeader.getContext());
+                    skillsScoreHeader.setText(getString(R.string.score_header));
+                    skillsScoreHeader.setBackgroundColor(whiteColor);
+                    skillsScoreHeader.setLayoutParams(headerParams);
+                    fragmentTableHeader.addView(skillsScoreHeader);
+
+                    if (retrieveSkillsTask.getStatus() == AsyncTask.Status.RUNNING) {
+                        retrieveSkillsTask.cancel(true);
+                    }
+                    retrieveSkillsTask.setProgressBar(fragmentProgress);
+                    retrieveSkillsTask.execute(fragmentTable);
+                    break;
             }
 
             return rootView;
@@ -689,7 +902,7 @@ public class EventActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 2;
+            return 3;
         }
 
         @Override
@@ -699,6 +912,8 @@ public class EventActivity extends AppCompatActivity {
                     return getString(R.string.rankings_tab);
                 case 1:
                     return getString(R.string.matches_tab);
+                case 2:
+                    return getString(R.string.skills_tab);
             }
             return null;
         }

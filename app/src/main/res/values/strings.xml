@@ -658,4 +658,9 @@
     <string name="save_button">Save</string>
 
     <string name="current_season">Starstruck</string>
+
+    <string name="robot_skills">Robot Skills</string>
+    <string name="driver_skills">Driver Skills</string>
+    <string name="auton_skills">Programming Skills</string>
+    <string name="attempts">Attempts</string>
 </resources>
