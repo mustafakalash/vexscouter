@@ -3,7 +3,6 @@ package com.mkalash.vexscouter;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.usage.UsageEvents;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -20,13 +19,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.LinearLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -117,6 +113,7 @@ public class EventActivity extends AppCompatActivity {
     }
 
     static class Match {
+        private String name;
         private String red1;
         private String red2;
         private String red3;
@@ -129,7 +126,8 @@ public class EventActivity extends AppCompatActivity {
         private int blueScore;
         private boolean scored;
 
-        public Match(String red1, String red2, String red3, String redSit, String blue1, String blue2, String blue3, String blueSit, int redScore, int blueScore, boolean scored) {
+        public Match(String name, String red1, String red2, String red3, String redSit, String blue1, String blue2, String blue3, String blueSit, int redScore, int blueScore, boolean scored) {
+            this.name = name;
             this.red1 = red1;
             this.red2 = red2;
             this.red3 = red3;
@@ -186,6 +184,10 @@ public class EventActivity extends AppCompatActivity {
         public boolean isScored() {
             return scored;
         }
+
+        public String getName() {
+            return name;
+        }
     }
 
     static class TeamClickListener implements Button.OnClickListener {
@@ -234,6 +236,24 @@ public class EventActivity extends AppCompatActivity {
                 JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject match = result.getJSONObject(i);
+                    String name;
+                    switch(match.getInt("round")) {
+                        case 1:
+                            name = "Practice #" + match.getInt("matchnum");
+                            break;
+                        default:
+                        case 2:
+                            name = "Qualification #" + match.getInt("matchnum");
+                            break;
+                        case 3:
+                            name = "Quarterfinal " + match.getInt("instance") + " #" + match.getInt("matchnum");
+                            break;
+                        case 4:
+                            name = "Semifinal " + match.getInt("instance") + " #" + match.getInt("matchnum");
+                            break;
+                        case 5:
+                            name = "Final #" + match.getInt("matchnum");
+                    }
                     String red1 = match.getString("red1");
                     String red2 = match.getString("red2");
                     String red3 = match.getString("red3");
@@ -245,7 +265,7 @@ public class EventActivity extends AppCompatActivity {
                     int redScore = match.getInt("redscore");
                     int blueScore = match.getInt("bluescore");
                     boolean scored = "1".equals(match.getString("scored"));
-                    Match matchObj = new Match(red1, red2, red3, redSit, blue1, blue2, blue3, blueSit, redScore, blueScore, scored);
+                    Match matchObj = new Match(name, red1, red2, red3, redSit, blue1, blue2, blue3, blueSit, redScore, blueScore, scored);
                     matches.add(matchObj);
                     publishProgress((int) (((i + 1) / (float) result.length()) * 100));
                     if(isCancelled()) {
@@ -274,6 +294,7 @@ public class EventActivity extends AppCompatActivity {
 
             LinearLayout.LayoutParams redRowParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            redRowParams.setMargins(0, 0, 0, 2);
 
             LinearLayout.LayoutParams blueRowParams =
                     new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
@@ -294,6 +315,12 @@ public class EventActivity extends AppCompatActivity {
             }
 
             for(Match match : matches) {
+                TextView matchName = new TextView(matchTable.getContext());
+                matchName.setText(match.getName());
+                matchName.setLayoutParams(redRowParams);
+                matchName.setBackgroundColor(whiteColor);
+                matchTable.addView(matchName);
+
                 LinearLayout redRow = new LinearLayout(matchTable.getContext());
                 redRow.setOrientation(LinearLayout.HORIZONTAL);
                 redRow.setLayoutParams(redRowParams);
