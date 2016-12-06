@@ -5,6 +5,15 @@
     tools:context="com.mkalash.vexscouter.EventActivity$EventFragment"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_event_table_header"
+        android:background="@color/colorAccent">
+
+    </LinearLayout>
+
     <ProgressBar
         style="@style/Widget.AppCompat.ProgressBar"
         android:layout_width="match_parent"
@@ -15,29 +24,14 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
-        <TableLayout
+        <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/fragment_event_table"
-            android:minHeight="178dp">
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/fragment_event_table_header" >
-
-            </TableRow>
-
-            <TableRow
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/colorAccent"
-                android:minHeight="5dp" >
-
-            </TableRow>
-        </TableLayout>
+            android:background="@color/colorAccent"></LinearLayout>
     </ScrollView>
 
 </LinearLayout>

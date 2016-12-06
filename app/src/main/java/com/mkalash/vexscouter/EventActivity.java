@@ -19,7 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TableLayout;
+import android.widget.LinearLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
@@ -164,10 +164,10 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    class RetrieveMatches extends AsyncTask<TableLayout, Integer, ArrayList<Match>> {
+    class RetrieveMatches extends AsyncTask<LinearLayout, Integer, ArrayList<Match>> {
 
         private ProgressBar progressBar;
-        private TableLayout matchTable;
+        private LinearLayout matchTable;
         ArrayList<Match> matches = new ArrayList<Match>();
 
         public void setProgressBar(ProgressBar bar) {
@@ -175,7 +175,7 @@ public class EventActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<Match> doInBackground(TableLayout... params) {
+        protected ArrayList<Match> doInBackground(LinearLayout... params) {
             this.matchTable = params[0];
             try {
                 String urlString = "https://api.vexdb.io/v1/get_matches?sku=" + sku;
@@ -233,10 +233,19 @@ public class EventActivity extends AppCompatActivity {
             int redResultOut = ResourcesCompat.getColor(getResources(), R.color.redResultOut, null);
             int blueResult = ResourcesCompat.getColor(getResources(), R.color.blueResult, null);
             int blueResultOut = ResourcesCompat.getColor(getResources(), R.color.blueResultOut, null);
-            int accentColor = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
+            int whiteColor = ResourcesCompat.getColor(getResources(), R.color.white, null);
 
-            LinearLayout.LayoutParams teamRowParams =
-                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            LinearLayout.LayoutParams redRowParams =
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+            LinearLayout.LayoutParams blueRowParams =
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            blueRowParams.setMargins(0, 0, 0, 10);
+
+            LinearLayout.LayoutParams teamColParams =
+                    new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
+            teamColParams.setMargins(2, 0, 2, 0);
+            teamColParams.weight = 1;
 
             TeamClickListener teamClickListener = new TeamClickListener();
 
@@ -244,41 +253,52 @@ public class EventActivity extends AppCompatActivity {
                 TextView emptyPage = new TextView(matchTable.getContext());
                 emptyPage.setText(R.string.no_results);
                 matchTable.addView(emptyPage);
+                matchTable.setBackgroundColor(whiteColor);
             }
 
             for(Match match : matches) {
-                TableRow redRow = new TableRow(matchTable.getContext());
+                LinearLayout redRow = new LinearLayout(matchTable.getContext());
                 redRow.setOrientation(LinearLayout.HORIZONTAL);
-                redRow.setLayoutParams(teamRowParams);
-                redRow.setBackgroundColor(redResult);
+                redRow.setLayoutParams(redRowParams);
                 matchTable.addView(redRow);
 
-                TableRow blueRow = new TableRow(matchTable.getContext());
+                LinearLayout blueRow = new LinearLayout(matchTable.getContext());
                 blueRow.setOrientation(LinearLayout.HORIZONTAL);
-                blueRow.setLayoutParams(teamRowParams);
-                blueRow.setBackgroundColor(blueResult);
+                blueRow.setLayoutParams(blueRowParams);
                 matchTable.addView(blueRow);
 
-                TableRow divider = new TableRow(matchTable.getContext());
-                divider.setMinimumHeight(5);
-                divider.setBackgroundColor(accentColor);
-                matchTable.addView(divider);
-
                 Button red1 = new Button(matchTable.getContext());
+                red1.setLayoutParams(teamColParams);
                 red1.setOnClickListener(teamClickListener);
+
                 Button red2 = new Button(matchTable.getContext());
+                red2.setLayoutParams(teamColParams);
                 red2.setOnClickListener(teamClickListener);
+
                 Button red3 = new Button(matchTable.getContext());
-                red3.setOnClickListener(teamClickListener);
+                red3.setLayoutParams(teamColParams);
+                if(!match.getRed3().isEmpty()) {
+                    red3.setOnClickListener(teamClickListener);
+                }
+
                 Button blue1 = new Button(matchTable.getContext());
+                blue1.setLayoutParams(teamColParams);
                 blue1.setOnClickListener(teamClickListener);
+
                 Button blue2 = new Button(matchTable.getContext());
+                blue2.setLayoutParams(teamColParams);
                 blue2.setOnClickListener(teamClickListener);
+
                 Button blue3 = new Button(matchTable.getContext());
-                blue3.setOnClickListener(teamClickListener);
+                blue3.setLayoutParams(teamColParams);
+                if(!match.getBlue3().isEmpty()) {
+                    blue3.setOnClickListener(teamClickListener);
+                }
 
                 TextView redScore = new TextView(matchTable.getContext());
+                redScore.setLayoutParams(teamColParams);
                 TextView blueScore = new TextView(matchTable.getContext());
+                blueScore.setLayoutParams(teamColParams);
 
                 red1.setText(match.getRed1());
                 if(match.getRed1().equals(match.getRedSit())) {
@@ -302,11 +322,7 @@ public class EventActivity extends AppCompatActivity {
                 } else {
                     red3.setBackgroundColor(redResult);
                 }
-                if(match.getRed3().isEmpty()) {
-                    redRow.addView(new TextView(matchTable.getContext()));
-                } else {
-                    redRow.addView(red3);
-                }
+                redRow.addView(red3);
 
                 blue1.setText(match.getBlue1());
                 if(match.getBlue1().equals(match.getBlueSit())) {
@@ -330,27 +346,29 @@ public class EventActivity extends AppCompatActivity {
                 } else {
                     blue3.setBackgroundColor(blueResult);
                 }
-                if(match.getBlue3().isEmpty()) {
-                    blueRow.addView(new TextView(matchTable.getContext()));
+                blueRow.addView(blue3);
+
+                if(!match.isScored()) {
+                    redScore.setBackgroundColor(redResultOut);
+                    blueScore.setBackgroundColor(blueResultOut);
                 } else {
-                    blueRow.addView(blue3);
+                    redScore.setBackgroundColor(redResult);
+                    blueScore.setBackgroundColor(blueResult);
                 }
 
-                if(match.isScored()) {
-                    redScore.setText(Integer.toString(match.getRedScore()));
-                    redScore.setTextSize(25f);
-                    if(match.getRedScore() > match.getBlueScore()) {
-                        redScore.setTypeface(null, Typeface.BOLD);
-                    }
-                    redRow.addView(redScore);
-
-                    blueScore.setText(Integer.toString(match.getBlueScore()));
-                    blueScore.setTextSize(25f);
-                    if(match.getBlueScore() > match.getRedScore()) {
-                        blueScore.setTypeface(null, Typeface.BOLD);
-                    }
-                    blueRow.addView(blueScore);
+                redScore.setText(Integer.toString(match.getRedScore()));
+                redScore.setTextSize(25f);
+                if(match.getRedScore() > match.getBlueScore()) {
+                    redScore.setTypeface(null, Typeface.BOLD);
                 }
+                redRow.addView(redScore);
+
+                blueScore.setText(Integer.toString(match.getBlueScore()));
+                blueScore.setTextSize(25f);
+                if(match.getBlueScore() > match.getRedScore()) {
+                    blueScore.setTypeface(null, Typeface.BOLD);
+                }
+                blueRow.addView(blueScore);
             }
 
             progressBar.setVisibility(View.GONE);
@@ -358,10 +376,10 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    class RetrieveRankings extends AsyncTask<TableLayout, Integer, ArrayList<Rank>> {
+    class RetrieveRankings extends AsyncTask<LinearLayout, Integer, ArrayList<Rank>> {
 
         private ProgressBar progressBar;
-        private TableLayout rankingTable;
+        private LinearLayout rankingTable;
         ArrayList<Rank> rankings = new ArrayList<Rank>();
 
         public void setProgressBar(ProgressBar bar) {
@@ -369,7 +387,7 @@ public class EventActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<Rank> doInBackground(TableLayout... params) {
+        protected ArrayList<Rank> doInBackground(LinearLayout... params) {
             this.rankingTable = params[0];
             try {
                 String urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku;
@@ -420,13 +438,16 @@ public class EventActivity extends AppCompatActivity {
         protected void onPostExecute(ArrayList<Rank> rankings) {
 
             int accentColor = ResourcesCompat.getColor(getResources(), R.color.colorAccent, null);
+            int whiteColor = ResourcesCompat.getColor(getResources(), R.color.white, null);
 
             LinearLayout.LayoutParams rankRowParams =
-                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT);
-            rankRowParams.setMargins(0, 10, 0, 10);
+                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            rankRowParams.setMargins(0, 0, 0, 2);
 
-            LinearLayout.LayoutParams vertDividerParams =
-                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+            LinearLayout.LayoutParams rankColParams =
+                    new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.MATCH_PARENT);
+            rankColParams.setMargins(2, 0, 2, 0);
+            rankColParams.weight = 1;
 
             TeamClickListener teamClickListener = new TeamClickListener();
 
@@ -434,44 +455,52 @@ public class EventActivity extends AppCompatActivity {
                 TextView emptyPage = new TextView(rankingTable.getContext());
                 emptyPage.setText(R.string.no_results);
                 rankingTable.addView(emptyPage);
+                rankingTable.setBackgroundColor(whiteColor);
             }
 
             for(Rank rank : rankings) {
-                TableRow rankRow = new TableRow(rankingTable.getContext());
+                LinearLayout rankRow = new LinearLayout(rankingTable.getContext());
                 rankRow.setOrientation(LinearLayout.HORIZONTAL);
                 rankRow.setLayoutParams(rankRowParams);
 
                 TextView rankNum = new TextView(rankingTable.getContext());
                 rankNum.setText(Integer.toString(rank.getRank()));
+                rankNum.setBackgroundColor(whiteColor);
+                rankNum.setLayoutParams(rankColParams);
                 rankRow.addView(rankNum);
 
                 Button team = new Button(rankingTable.getContext());
                 team.setOnClickListener(teamClickListener);
                 team.setText(rank.getTeam());
-                rankRow.addView(team);
+                team.setBackgroundColor(whiteColor);
+                team.setLayoutParams(rankColParams);
+                rankRow.addView(team, rankColParams);
 
                 TextView wp = new TextView(rankingTable.getContext());
                 wp.setText(Integer.toString(rank.getWP()));
+                wp.setBackgroundColor(whiteColor);
+                wp.setLayoutParams(rankColParams);
                 rankRow.addView(wp);
 
                 TextView ap = new TextView(rankingTable.getContext());
                 ap.setText(Integer.toString(rank.getAP()));
+                ap.setBackgroundColor(whiteColor);
+                ap.setLayoutParams(rankColParams);
                 rankRow.addView(ap);
 
                 TextView trsp = new TextView(rankingTable.getContext());
                 trsp.setText(Integer.toString(rank.getTRSP()));
+                trsp.setBackgroundColor(whiteColor);
+                trsp.setLayoutParams(rankColParams);
                 rankRow.addView(trsp);
 
                 TextView ccwm = new TextView(rankingTable.getContext());
                 ccwm.setText(Double.toString(rank.getCCWM()));
+                ccwm.setBackgroundColor(whiteColor);
+                ccwm.setLayoutParams(rankColParams);
                 rankRow.addView(ccwm);
 
                 rankingTable.addView(rankRow);
-
-                TableRow horizDivider = new TableRow(rankingTable.getContext());
-                horizDivider.setMinimumHeight(2);
-                horizDivider.setBackgroundColor(accentColor);
-                rankingTable.addView(horizDivider);
             }
 
             progressBar.setVisibility(View.GONE);
@@ -547,42 +576,54 @@ public class EventActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_event, container, false);
 
             ProgressBar fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
-            TableLayout fragmentTable = (TableLayout) rootView.findViewById(R.id.fragment_event_table);
-            TableRow fragmentTableHeader = (TableRow) rootView.findViewById(R.id.fragment_event_table_header);
+            LinearLayout fragmentTable = (LinearLayout) rootView.findViewById(R.id.fragment_event_table);
+            LinearLayout fragmentTableHeader = (LinearLayout) rootView.findViewById(R.id.fragment_event_table_header);
 
             RetrieveRankings retrieveRankingsTask = ((EventActivity) container.getContext()).retrieveRankingsTask;
             RetrieveMatches retrieveMatchesTask = ((EventActivity) container.getContext()).retrieveMatchesTask;
+
+            LinearLayout.LayoutParams headerParams = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT);
+            headerParams.setMargins(2, 0, 2, 5);
+            headerParams.weight = 1;
+
+            int whiteColor = ResourcesCompat.getColor(getResources(), R.color.white, null);
 
             switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
                     TextView rankHeader = new TextView(fragmentTableHeader.getContext());
                     rankHeader.setText(getString(R.string.rank_header));
-                    rankHeader.setPadding(5, 5, 5, 5);
+                    rankHeader.setBackgroundColor(whiteColor);
+                    rankHeader.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(rankHeader);
 
                     TextView teamHeader = new TextView(fragmentTableHeader.getContext());
                     teamHeader.setText(getString(R.string.team_header));
-                    teamHeader.setPadding(5, 5, 5, 5);
+                    teamHeader.setBackgroundColor(whiteColor);
+                    teamHeader.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(teamHeader);
 
                     TextView wpHeader = new TextView(fragmentTableHeader.getContext());
                     wpHeader.setText(getString(R.string.wp_header));
-                    wpHeader.setPadding(5, 5, 5, 5);
+                    wpHeader.setBackgroundColor(whiteColor);
+                    wpHeader.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(wpHeader);
 
                     TextView apHeader = new TextView(fragmentTableHeader.getContext());
                     apHeader.setText(getString(R.string.ap_header));
-                    apHeader.setPadding(5, 5, 5, 5);
+                    apHeader.setBackgroundColor(whiteColor);
+                    apHeader.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(apHeader);
 
                     TextView trspHeader = new TextView(fragmentTableHeader.getContext());
                     trspHeader.setText(getString(R.string.trsp_header));
-                    trspHeader.setPadding(5, 5, 5, 5);
+                    trspHeader.setBackgroundColor(whiteColor);
+                    trspHeader.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(trspHeader);
 
                     TextView ccwmHeader = new TextView(fragmentTableHeader.getContext());
                     ccwmHeader.setText(getString(R.string.ccwm_header));
-                    ccwmHeader.setPadding(5, 5, 5, 5);
+                    ccwmHeader.setBackgroundColor(whiteColor);
+                    ccwmHeader.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(ccwmHeader);
 
                     if (retrieveRankingsTask.getStatus() == AsyncTask.Status.RUNNING) {
@@ -594,18 +635,26 @@ public class EventActivity extends AppCompatActivity {
                 case 2:
                     TextView team1Header = new TextView(fragmentTableHeader.getContext());
                     team1Header.setText(getString(R.string.team1_header));
+                    team1Header.setBackgroundColor(whiteColor);
+                    team1Header.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(team1Header);
 
                     TextView team2Header = new TextView(fragmentTableHeader.getContext());
                     team2Header.setText(getString(R.string.team2_header));
+                    team2Header.setBackgroundColor(whiteColor);
+                    team2Header.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(team2Header);
 
                     TextView team3Header = new TextView(fragmentTableHeader.getContext());
                     team3Header.setText(getString(R.string.team3_header));
+                    team3Header.setBackgroundColor(whiteColor);
+                    team3Header.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(team3Header);
 
                     TextView scoreHeader = new TextView(fragmentTableHeader.getContext());
                     scoreHeader.setText(getString(R.string.score_header));
+                    scoreHeader.setBackgroundColor(whiteColor);
+                    scoreHeader.setLayoutParams(headerParams);
                     fragmentTableHeader.addView(scoreHeader);
 
                     if (retrieveMatchesTask.getStatus() == AsyncTask.Status.RUNNING) {
