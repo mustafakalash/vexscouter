@@ -24,6 +24,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -34,7 +35,7 @@ public class TeamActivity extends AppCompatActivity {
     private String eventName;
     private RetrieveRating retrieveRatingTask = new RetrieveRating();
 
-    class RetrieveRating extends AsyncTask<RatingBar, Integer, Integer> {
+    class RetrieveRating extends AsyncTask<RatingBar, Integer, float[]> {
 
         private ProgressBar progressBar;
         private RatingBar ratingBar;
@@ -44,10 +45,11 @@ public class TeamActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Integer doInBackground(RatingBar... params) {
+        protected float[] doInBackground(RatingBar... params) {
             this.ratingBar = params[0];
+            float[] returnValue = new float[2];
             try {
-                String urlString = "https://api.vexdb.io/v1/get_season_rankings?season=Starstruck&team=" + teamNumber;
+                String urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&team=" + teamNumber;
                 StringBuilder json = new StringBuilder();
                 URL url = new URL(urlString);
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
@@ -65,9 +67,31 @@ public class TeamActivity extends AppCompatActivity {
                 }
                 JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
                 JSONObject team = result.getJSONObject(0);
-                int vRating = team.getInt("vrating_rank");
+                float vRating = (float) team.getInt("vrating_rank");
+                returnValue[0] = vRating;
+                publishProgress(50);
+
+                urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&program=VRC&nodata=true";
+                json = new StringBuilder();
+                url = new URL(urlString);
+                in = new BufferedReader(new InputStreamReader(url.openStream()));
+                try {
+                    String str;
+                    int i = 1;
+                    while ((str = in.readLine()) != null) {
+                        json.append(str);
+                        if(isCancelled()) {
+                            break;
+                        }
+                    }
+                } finally {
+                    in.close();
+                }
+                int size = new JSONObject(json.toString()).getInt("size");
                 publishProgress(100);
-                return vRating;
+
+                returnValue[1] = (float) size;
+                return returnValue;
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
@@ -80,8 +104,8 @@ public class TeamActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(Integer vRating) {
-            float rating = 10 - ((10 * (float) vRating) / 5000);
+        protected void onPostExecute(float[] result) {
+            float rating = 10f - ((10f * result[0]) / result[1]);
             ratingBar.setRating(rating);
 
             progressBar.setVisibility(View.GONE);

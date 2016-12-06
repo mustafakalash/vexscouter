@@ -639,6 +639,7 @@
 
     <string name="matches_tab">Matches</string>
     <string name="rankings_tab">Rankings</string>
+    <string name="skills_tab">Skills</string>
 
     <string name="rank_header">Rank</string>
     <string name="team_header">Team</string>
@@ -655,4 +656,6 @@
     <string name="vrating_label">vRating:</string>
     <string name="notes_label">Notes:</string>
     <string name="save_button">Save</string>
+
+    <string name="current_season">Starstruck</string>
 </resources>
