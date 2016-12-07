@@ -493,7 +493,7 @@ public class EventActivity extends AppCompatActivity {
                     for (int i = 0; i < result.length(); i++) {
                         JSONObject rank = result.getJSONObject(i);
                         String team = rank.getString("number");
-                        Rank rankObj = new Rank(team, i, 0, 0, 0, 0);
+                        Rank rankObj = new Rank(team, i + 1, 0, 0, 0, 0);
                         rankings.add(rankObj);
                         publishProgress((int) (((i + 1) / (float) result.length()) * 100));
                         if (isCancelled()) {
