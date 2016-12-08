@@ -665,4 +665,7 @@
     <string name="attempts">Attempts</string>
 
     <string name="refresh_button">Refresh</string>
+
+    <string name="events_tab">Events</string>
+    <string name="teams_tab">Teams</string>
 </resources>

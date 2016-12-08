@@ -1,24 +1,17 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+    android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     tools:context="com.mkalash.vexscouter.MainActivity">
 
-    <ProgressBar
-        style="@style/Widget.AppCompat.ProgressBar"
+    <android.support.v4.view.PagerTitleStrip
+        android:id="@+id/container_title_strip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/event_progress"
-        android:max="100"
-        android:progress="0" />
-
-    <ListView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/event_list" />
-</LinearLayout>
+        android:layout_gravity="top"
+        android:background="@color/colorAccent"
+        android:textColor="#fff"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp" />
+</android.support.v4.view.ViewPager>
