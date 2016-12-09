@@ -3,10 +3,15 @@ package com.mkalash.vexscouter;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v13.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
@@ -31,11 +36,15 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EventActivity extends AppCompatActivity {
 
     private static String name;
     private static String sku;
+
+    private Menu menu;
 
     static class Skill {
         private String team;
@@ -789,14 +798,49 @@ public class EventActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.event_toolbar, menu);
+        this.menu = menu;
+
+        final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+        Set<String> favoriteEvents = sharedPref.getStringSet("favorite_events", new HashSet<String>());
+
+        if(favoriteEvents.contains(name)) {
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
+        }
+
         return true;
     }
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what == 0) {
+                recreate();
+            }
+        }
+    };
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
             case R.id.action_refresh:
-                recreate();
+                Message msg = handler.obtainMessage();
+                msg.what = 0;
+                handler.sendMessage(msg);
+                return true;
+            case R.id.action_favorite:
+                final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+                Set<String> favoriteEventsPref = sharedPref.getStringSet("favorite_events", new HashSet<String>());
+                Set<String> favoriteEvents = new HashSet<String>(favoriteEventsPref);
+                SharedPreferences.Editor prefEditor = sharedPref.edit();
+                if(favoriteEvents.contains(name)) {
+                    favoriteEvents.remove(name);
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_off));
+                } else {
+                    favoriteEvents.add(name);
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
+                }
+                prefEditor.putStringSet("favorite_events", favoriteEvents);
+                prefEditor.commit();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

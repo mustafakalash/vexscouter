@@ -2,9 +2,12 @@ package com.mkalash.vexscouter;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.content.res.ResourcesCompat;
@@ -31,8 +34,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -244,6 +249,24 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if(msg.what == 0) {
+                recreate();
+            }
+        }
+    };
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+
+        Message msg = handler.obtainMessage();
+        msg.what = 0;
+        handler.sendMessage(msg);
+    }
+
     public static class MainFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this
@@ -280,12 +303,28 @@ public class MainActivity extends AppCompatActivity {
                     android.R.layout.simple_list_item_1);
             fragmentList.setAdapter(fragmentListAdapter);
 
+            ListView fragmentFavoriteList = (ListView) rootView.findViewById(R.id.fragment_favorite_list);
+            ArrayAdapter<String> fragmentFavoriteListAdapter = new ArrayAdapter<String>(
+                    rootView.getContext(),
+                    android.R.layout.simple_list_item_1);
+            fragmentFavoriteList.setAdapter(fragmentFavoriteListAdapter);
+
             RetrieveEvents retrieveEventsTask = new RetrieveEvents();
             RetrieveTeams retrieveTeamsTask = new RetrieveTeams();
+
+            final SharedPreferences sharedPref = rootView.getContext().getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
 
             switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
                     fragmentList.setOnItemClickListener(new EventListClickListener(events));
+
+                    Set<String> favoriteEvents = sharedPref.getStringSet("favorite_events", new HashSet<String>());
+                    if(favoriteEvents.size() > 0) {
+                        fragmentFavoriteListAdapter.addAll(favoriteEvents);
+                        fragmentFavoriteList.setOnItemClickListener(new EventListClickListener(events));
+                    } else {
+                        fragmentFavoriteListAdapter.add("No favorites saved.");
+                    }
 
                     if (retrieveEventsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveEventsTask.cancel(true);
@@ -296,6 +335,14 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 2:
                     fragmentList.setOnItemClickListener(new TeamListClickListener());
+
+                    Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
+                    if(favoriteTeams.size() > 0) {
+                        fragmentFavoriteListAdapter.addAll(favoriteTeams);
+                        fragmentFavoriteList.setOnItemClickListener(new TeamListClickListener());
+                    } else {
+                        fragmentFavoriteListAdapter.add("No favorites saved.");
+                    }
 
                     if (retrieveTeamsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveTeamsTask.cancel(true);

@@ -5,10 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.Rating;
 import android.os.AsyncTask;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -27,11 +31,14 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class TeamActivity extends AppCompatActivity {
 
     private String teamNumber;
     private RetrieveRating retrieveRatingTask = new RetrieveRating();
+    private Menu menu;
 
     class RetrieveRating extends AsyncTask<RatingBar, Integer, float[]> {
 
@@ -151,5 +158,43 @@ public class TeamActivity extends AppCompatActivity {
 
         Button saveButton = (Button) findViewById(R.id.save_notes);
         saveButton.setOnClickListener(new notesSaveListener());
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.team_toolbar, menu);
+        this.menu = menu;
+
+        final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+        Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
+
+        if(favoriteTeams.contains(teamNumber)) {
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_favorite:
+                final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+                Set<String> favoriteTeamsPref = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
+                Set<String> favoriteTeams = new HashSet<String>(favoriteTeamsPref);
+                SharedPreferences.Editor prefEditor = sharedPref.edit();
+                if(favoriteTeams.contains(teamNumber)) {
+                    favoriteTeams.remove(teamNumber);
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_off));
+                } else {
+                    favoriteTeams.add(teamNumber);
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
+                }
+                prefEditor.putStringSet("favorite_teams", favoriteTeams);
+                prefEditor.commit();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

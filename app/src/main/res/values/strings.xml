@@ -668,4 +668,9 @@
 
     <string name="events_tab">Events</string>
     <string name="teams_tab">Teams</string>
+
+    <string name="action_favorite">Favorite</string>
+
+    <string name="favorite_header">Favorites</string>
+    <string name="all_header">All</string>
 </resources>
