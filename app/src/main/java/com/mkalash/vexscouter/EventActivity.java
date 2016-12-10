@@ -334,10 +334,9 @@ public class EventActivity extends AppCompatActivity {
                 blue1.setOnClickListener(teamClickListener);
 
                 Button blue2 = (Button) matchRow.findViewById(R.id.blue2);
-                blue1.setOnClickListener(teamClickListener);
+                blue2.setOnClickListener(teamClickListener);
 
                 Button blue3 = (Button) matchRow.findViewById(R.id.blue3);
-                blue1.setOnClickListener(teamClickListener);
                 if(!match.getBlue3().isEmpty()) {
                     blue3.setOnClickListener(teamClickListener);
                 }
