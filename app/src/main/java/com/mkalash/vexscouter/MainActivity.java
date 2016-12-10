@@ -249,22 +249,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            if(msg.what == 0) {
-                recreate();
-            }
-        }
-    };
-
     @Override
     public void onRestart() {
         super.onRestart();
 
-        Message msg = handler.obtainMessage();
-        msg.what = 0;
-        handler.sendMessage(msg);
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                recreate();
+            }
+        }, 1);
     }
 
     public static class MainFragment extends Fragment {

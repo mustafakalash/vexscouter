@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/rank"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center_vertical|center"
+        android:background="@color/white" />
+
+    <Button
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/team"
+        android:layout_weight="1"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="2dp"
+        android:background="@color/white" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/wp"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center_vertical|center"
+        android:background="@color/white" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/ap"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center_vertical|center"
+        android:background="@color/white" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/trsp"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center_vertical|center"
+        android:background="@color/white" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/ccwm"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center_vertical|center"
+        android:background="@color/white" />
+</LinearLayout>
