@@ -12,7 +12,8 @@
         android:layout_marginBottom="2dp"
         android:background="@color/white"
         android:gravity="center_vertical|center"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:textIsSelectable="true" />
 
     <Button
         android:layout_width="0dp"
@@ -33,7 +34,8 @@
         android:layout_marginBottom="2dp"
         android:background="@color/white"
         android:gravity="center_vertical|center"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:textIsSelectable="true" />
 
     <TextView
         android:layout_width="0dp"
@@ -44,5 +46,6 @@
         android:layout_marginBottom="2dp"
         android:background="@color/white"
         android:gravity="center_vertical|center"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:textIsSelectable="true" />
 </LinearLayout>

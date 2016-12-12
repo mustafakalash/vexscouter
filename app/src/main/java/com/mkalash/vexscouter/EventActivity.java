@@ -8,12 +8,12 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -22,7 +22,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -46,13 +45,13 @@ public class EventActivity extends AppCompatActivity {
     private Menu menu;
 
     static class Skill {
-        private String team;
-        private int rank;
-        private int attempts;
-        private int score;
-        private int type;
+        private final String team;
+        private final int rank;
+        private final int attempts;
+        private final int score;
+        private final int type;
 
-        public Skill(String team, int rank, int attempts, int score, int type) {
+        Skill(String team, int rank, int attempts, int score, int type) {
             this.team = team;
             this.rank = rank;
             this.attempts = attempts;
@@ -60,37 +59,37 @@ public class EventActivity extends AppCompatActivity {
             this.type = type;
         }
 
-        public String getTeam() {
+        String getTeam() {
             return team;
         }
 
-        public int getRank() {
+        int getRank() {
             return rank;
         }
 
-        public int getAttempts() {
+        int getAttempts() {
             return attempts;
         }
 
-        public int getScore() {
+        int getScore() {
             return score;
         }
 
-        public int getType() {
+        int getType() {
             return type;
         }
     }
 
     static class Rank {
-        private String team;
-        private int rank;
-        private int wp;
-        private int ap;
-        private int sp;
-        private int trsp;
-        private double ccwm;
+        private final String team;
+        private final int rank;
+        private final int wp;
+        private final int ap;
+        private final int sp;
+        private final int trsp;
+        private final double ccwm;
 
-        public Rank(String team, int rank, int wp, int ap, int sp, int trsp, double ccwm) {
+        Rank(String team, int rank, int wp, int ap, int sp, int trsp, double ccwm) {
             this.team = team;
             this.rank = rank;
             this.wp = wp;
@@ -100,50 +99,50 @@ public class EventActivity extends AppCompatActivity {
             this.ccwm = ccwm;
         }
 
-        public String getTeam() {
+        String getTeam() {
             return team;
         }
 
-        public int getRank() {
+        int getRank() {
             return rank;
         }
 
-        public int getWP() {
+        int getWP() {
             return wp;
         }
 
-        public int getAP() {
+        int getAP() {
             return ap;
         }
 
-        public int getTRSP() {
+        int getTRSP() {
             return trsp;
         }
 
-        public double getCCWM() {
+        double getCCWM() {
             return ccwm;
         }
 
-        public int getSP() {
+        int getSP() {
             return sp;
         }
     }
 
     static class Match {
-        private String name;
-        private String red1;
-        private String red2;
-        private String red3;
-        private String redSit;
-        private String blue1;
-        private String blue2;
-        private String blue3;
-        private String blueSit;
-        private int redScore;
-        private int blueScore;
-        private boolean scored;
+        private final String name;
+        private final String red1;
+        private final String red2;
+        private final String red3;
+        private final String redSit;
+        private final String blue1;
+        private final String blue2;
+        private final String blue3;
+        private final String blueSit;
+        private final int redScore;
+        private final int blueScore;
+        private final boolean scored;
 
-        public Match(String name, String red1, String red2, String red3, String redSit, String blue1, String blue2, String blue3, String blueSit, int redScore, int blueScore, boolean scored) {
+        Match(String name, String red1, String red2, String red3, String redSit, String blue1, String blue2, String blue3, String blueSit, int redScore, int blueScore, boolean scored) {
             this.name = name;
             this.red1 = red1;
             this.red2 = red2;
@@ -158,47 +157,47 @@ public class EventActivity extends AppCompatActivity {
             this.scored = scored;
         }
 
-        public String getRed1() {
+        String getRed1() {
             return red1;
         }
 
-        public String getRed2() {
+        String getRed2() {
             return red2;
         }
 
-        public String getBlue1() {
+        String getBlue1() {
             return blue1;
         }
 
-        public String getBlue2() {
+        String getBlue2() {
             return blue2;
         }
 
-        public int getRedScore() {
+        int getRedScore() {
             return redScore;
         }
 
-        public int getBlueScore() {
+        int getBlueScore() {
             return blueScore;
         }
 
-        public String getRed3() {
+        String getRed3() {
             return red3;
         }
 
-        public String getRedSit() {
+        String getRedSit() {
             return redSit;
         }
 
-        public String getBlue3() {
+        String getBlue3() {
             return blue3;
         }
 
-        public String getBlueSit() {
+        String getBlueSit() {
             return blueSit;
         }
 
-        public boolean isScored() {
+        boolean isScored() {
             return scored;
         }
 
@@ -207,8 +206,7 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    static class TeamClickListener implements Button.OnClickListener {
-        private boolean name;
+    private static class TeamClickListener implements Button.OnClickListener {
 
         @Override
         public void onClick(View view) {
@@ -222,9 +220,9 @@ public class EventActivity extends AppCompatActivity {
 
         private ProgressBar progressBar;
         private LinearLayout matchTable;
-        ArrayList<Match> matches = new ArrayList<Match>();
+        final ArrayList<Match> matches = new ArrayList<>();
 
-        public void setProgressBar(ProgressBar bar) {
+        void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
         }
 
@@ -238,7 +236,6 @@ public class EventActivity extends AppCompatActivity {
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 try {
                     String str;
-                    int i = 1;
                     while ((str = in.readLine()) != null) {
                         json.append(str);
                         if(isCancelled()) {
@@ -404,9 +401,9 @@ public class EventActivity extends AppCompatActivity {
 
         private ProgressBar progressBar;
         private LinearLayout rankingTable;
-        ArrayList<Rank> rankings = new ArrayList<Rank>();
+        final ArrayList<Rank> rankings = new ArrayList<>();
 
-        public void setProgressBar(ProgressBar bar) {
+        void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
         }
 
@@ -420,7 +417,6 @@ public class EventActivity extends AppCompatActivity {
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 try {
                     String str;
-                    int i = 1;
                     while ((str = in.readLine()) != null) {
                         json.append(str);
                         if(isCancelled()) {
@@ -438,7 +434,6 @@ public class EventActivity extends AppCompatActivity {
                     in = new BufferedReader(new InputStreamReader(url.openStream()));
                     try {
                         String str;
-                        int i = 1;
                         while ((str = in.readLine()) != null) {
                             json.append(str);
                             if(isCancelled()) {
@@ -531,7 +526,7 @@ public class EventActivity extends AppCompatActivity {
                 trsp.setText(Integer.toString(rank.getTRSP()));
 
                 TextView ccwm = (TextView) rankRow.findViewById(R.id.ccwm);
-                ccwm.setText(Double.toString(rank.getCCWM()));
+                ccwm.setText(String.format("%.1f", rank.getCCWM()));
             }
 
             progressBar.setVisibility(View.GONE);
@@ -543,9 +538,9 @@ public class EventActivity extends AppCompatActivity {
 
         private ProgressBar progressBar;
         private LinearLayout skillsTable;
-        ArrayList<Skill> skills = new ArrayList<Skill>();
+        final ArrayList<Skill> skills = new ArrayList<>();
 
-        public void setProgressBar(ProgressBar bar) {
+        void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
         }
 
@@ -559,7 +554,6 @@ public class EventActivity extends AppCompatActivity {
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 try {
                     String str;
-                    int i = 1;
                     while ((str = in.readLine()) != null) {
                         json.append(str);
                         if(isCancelled()) {
@@ -654,7 +648,7 @@ public class EventActivity extends AppCompatActivity {
                         team.setText(skill.getTeam());
                         team.setOnClickListener(teamClickListener);
 
-                        TextView attempts = (TextView) skillRow.findViewById(R.id.attempts);;
+                        TextView attempts = (TextView) skillRow.findViewById(R.id.attempts);
                         attempts.setText(Integer.toString(skill.getAttempts()));
 
                         TextView score = (TextView) skillRow.findViewById(R.id.score);
@@ -669,28 +663,15 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v13.app.FragmentStatePagerAdapter}.
-     */
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-    private ViewPager mViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
 
         ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+        if (ab != null) {
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
 
         Intent intent = getIntent();
         name = intent.getStringExtra("EVENT_NAME");
@@ -699,10 +680,21 @@ public class EventActivity extends AppCompatActivity {
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        /*
+      The {@link android.support.v4.view.PagerAdapter} that will provide
+      fragments for each of the sections. We use a
+      {@link FragmentPagerAdapter} derivative, which will keep every
+      loaded fragment in memory. If this becomes too memory intensive, it
+      may be best to switch to a
+      {@link android.support.v13.app.FragmentStatePagerAdapter}.
+     */
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        /*
+      The {@link ViewPager} that will host the section contents.
+     */
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
 
@@ -737,7 +729,7 @@ public class EventActivity extends AppCompatActivity {
             case R.id.action_favorite:
                 final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
                 Set<String> favoriteEventsPref = sharedPref.getStringSet("favorite_events", new HashSet<String>());
-                Set<String> favoriteEvents = new HashSet<String>(favoriteEventsPref);
+                Set<String> favoriteEvents = new HashSet<>(favoriteEventsPref);
                 SharedPreferences.Editor prefEditor = sharedPref.edit();
                 if(favoriteEvents.contains(name)) {
                     favoriteEvents.remove(name);
@@ -747,7 +739,7 @@ public class EventActivity extends AppCompatActivity {
                     menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
                 }
                 prefEditor.putStringSet("favorite_events", favoriteEvents);
-                prefEditor.commit();
+                prefEditor.apply();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -763,9 +755,6 @@ public class EventActivity extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
-
-        public EventFragment() {
-        }
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -840,7 +829,7 @@ public class EventActivity extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -848,8 +837,7 @@ public class EventActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a EventFragment (defined as a static inner class below).
-            EventFragment eventFragment = EventFragment.newInstance(position + 1);
-            return eventFragment;
+            return EventFragment.newInstance(1 + position);
         }
 
         @Override

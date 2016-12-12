@@ -7,10 +7,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Handler;
-import android.os.Message;
 import android.preference.PreferenceManager;
 import android.support.v13.app.FragmentPagerAdapter;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -22,10 +20,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         private ProgressBar progressBar;
         private ArrayAdapter<String> eventListAdapter;
-        private Map<String, String> events = new TreeMap<String, String>();
+        private Map<String, String> events = new TreeMap<>();
 
         public void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
@@ -56,8 +52,9 @@ public class MainActivity extends AppCompatActivity {
             this.events = events;
         }
 
+        @SafeVarargs
         @Override
-        protected Map<String, String> doInBackground(ArrayAdapter<String>... params) {
+        protected final Map<String, String> doInBackground(ArrayAdapter<String>... params) {
             this.eventListAdapter = params[0];
             try {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(eventListAdapter.getContext());
@@ -74,7 +71,6 @@ public class MainActivity extends AppCompatActivity {
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 try {
                     String str;
-                    int i = 1;
                     while ((str = in.readLine()) != null) {
                         json.append(str);
                         if(isCancelled()) {
@@ -125,8 +121,9 @@ public class MainActivity extends AppCompatActivity {
             this.progressBar = bar;
         }
 
+        @SafeVarargs
         @Override
-        protected List<String> doInBackground(ArrayAdapter<String>... params) {
+        protected final List<String> doInBackground(ArrayAdapter<String>... params) {
             this.teamListAdapter = params[0];
             try {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(teamListAdapter.getContext());
@@ -143,7 +140,6 @@ public class MainActivity extends AppCompatActivity {
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 try {
                     String str;
-                    int i = 1;
                     while ((str = in.readLine()) != null) {
                         json.append(str);
                         if(isCancelled()) {
@@ -154,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
                     in.close();
                 }
                 JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
-                List<String> teams = new ArrayList<String>();
+                List<String> teams = new ArrayList<>();
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject team = result.getJSONObject(i);
                     teams.add(team.getString("number"));
@@ -186,7 +182,7 @@ public class MainActivity extends AppCompatActivity {
 
     static class EventListClickListener implements AdapterView.OnItemClickListener {
 
-        private Map<String, String> events;
+        private final Map<String, String> events;
 
         public EventListClickListener(Map<String, String> events) {
             this.events = events;
@@ -203,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static class TeamListClickListener implements AdapterView.OnItemClickListener {
+    private static class TeamListClickListener implements AdapterView.OnItemClickListener {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -214,9 +210,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
-    private ViewPager mViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -224,10 +217,10 @@ public class MainActivity extends AppCompatActivity {
 
         PreferenceManager.setDefaultValues(this, R.xml.filters, false);
 
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
+        SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
     @Override
@@ -269,9 +262,6 @@ public class MainActivity extends AppCompatActivity {
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        public MainFragment() {
-        }
-
         /**
          * Returns a new instance of this fragment for the given section
          * number.
@@ -289,17 +279,17 @@ public class MainActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-            Map<String, String> events = new TreeMap<String, String>();
+            Map<String, String> events = new TreeMap<>();
 
             ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.fragment_progress);
             ListView fragmentList = (ListView) rootView.findViewById(R.id.fragment_list);
-            ArrayAdapter<String> fragmentListAdapter = new ArrayAdapter<String>(
+            ArrayAdapter<String> fragmentListAdapter = new ArrayAdapter<>(
                     rootView.getContext(),
                     android.R.layout.simple_list_item_1);
             fragmentList.setAdapter(fragmentListAdapter);
 
             ListView fragmentFavoriteList = (ListView) rootView.findViewById(R.id.fragment_favorite_list);
-            ArrayAdapter<String> fragmentFavoriteListAdapter = new ArrayAdapter<String>(
+            ArrayAdapter<String> fragmentFavoriteListAdapter = new ArrayAdapter<>(
                     rootView.getContext(),
                     android.R.layout.simple_list_item_1);
             fragmentFavoriteList.setAdapter(fragmentFavoriteListAdapter);
@@ -365,8 +355,7 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a EventFragment (defined as a static inner class below).
-            MainFragment mainFragment = MainFragment.newInstance(position + 1);
-            return mainFragment;
+            return MainFragment.newInstance(position + 1);
         }
 
         @Override

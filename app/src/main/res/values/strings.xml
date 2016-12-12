@@ -635,8 +635,6 @@
 
     <string name="no_results">No results were found.</string>
 
-    <string name="action_settings">Settings</string>
-
     <string name="matches_tab">Matches</string>
     <string name="rankings_tab">Rankings</string>
     <string name="skills_tab">Skills</string>

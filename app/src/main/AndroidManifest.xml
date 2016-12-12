@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.mkalash.vexscouter">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -20,7 +21,8 @@
         <activity
             android:name=".FilterActivity"
             android:label="@string/action_filter"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mkalash.vexscouter.MainActivity" />
@@ -29,7 +31,8 @@
             android:name=".TeamActivity"/>
         <activity
             android:name=".EventActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            tools:ignore="UnusedAttribute">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.mkalash.vexscouter.MainActivity" />
