@@ -30,7 +30,6 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -87,14 +86,16 @@ public class EventActivity extends AppCompatActivity {
         private int rank;
         private int wp;
         private int ap;
+        private int sp;
         private int trsp;
         private double ccwm;
 
-        public Rank(String team, int rank, int wp, int ap, int trsp, double ccwm) {
+        public Rank(String team, int rank, int wp, int ap, int sp, int trsp, double ccwm) {
             this.team = team;
             this.rank = rank;
             this.wp = wp;
             this.ap = ap;
+            this.sp = sp;
             this.trsp = trsp;
             this.ccwm = ccwm;
         }
@@ -121,6 +122,10 @@ public class EventActivity extends AppCompatActivity {
 
         public double getCCWM() {
             return ccwm;
+        }
+
+        public int getSP() {
+            return sp;
         }
     }
 
@@ -447,7 +452,7 @@ public class EventActivity extends AppCompatActivity {
                     for (int i = 0; i < result.length(); i++) {
                         JSONObject rank = result.getJSONObject(i);
                         String team = rank.getString("number");
-                        Rank rankObj = new Rank(team, i + 1, 0, 0, 0, 0);
+                        Rank rankObj = new Rank(team, i + 1, 0, 0, 0, 0, 0);
                         rankings.add(rankObj);
                         publishProgress((int) (((i + 1) / (float) result.length()) * 100));
                         if (isCancelled()) {
@@ -462,9 +467,10 @@ public class EventActivity extends AppCompatActivity {
                         int rankNum = rank.getInt("rank");
                         int wp = rank.getInt("wp");
                         int ap = rank.getInt("ap");
+                        int sp = rank.getInt("sp");
                         int trsp = rank.getInt("trsp");
                         double ccwm = rank.getDouble("ccwm");
-                        Rank rankObj = new Rank(team, rankNum, wp, ap, trsp, ccwm);
+                        Rank rankObj = new Rank(team, rankNum, wp, ap, sp, trsp, ccwm);
                         rankings.add(rankObj);
                         publishProgress((int) (((i + 1) / (float) result.length()) * 100));
                         if (isCancelled()) {
@@ -517,6 +523,9 @@ public class EventActivity extends AppCompatActivity {
 
                 TextView ap = (TextView) rankRow.findViewById(R.id.ap);
                 ap.setText(Integer.toString(rank.getAP()));
+
+                TextView sp = (TextView) rankRow.findViewById(R.id.sp);
+                sp.setText(Integer.toString(rank.getSP()));
 
                 TextView trsp = (TextView) rankRow.findViewById(R.id.trsp);
                 trsp.setText(Integer.toString(rank.getTRSP()));

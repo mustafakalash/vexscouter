@@ -645,6 +645,7 @@
     <string name="team_header">Team</string>
     <string name="wp_header">WP</string>
     <string name="ap_header">AP</string>
+    <string name="sp_header">SP</string>
     <string name="trsp_header">TRSP</string>
     <string name="ccwm_header">CCWM</string>
 

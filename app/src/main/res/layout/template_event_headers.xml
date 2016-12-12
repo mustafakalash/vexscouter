@@ -59,10 +59,22 @@
             android:gravity="center_vertical|center" />
 
         <TextView
-            android:text="@string/trsp_header"
+            android:text="@string/sp_header"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:id="@+id/sp_header"
+            android:layout_weight="1"
+            android:layout_marginRight="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/white"
+            android:gravity="center_vertical|center" />
+
+        <TextView
+            android:text="@string/trsp_header"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/trsp_header"
             android:layout_weight="1"
             android:layout_marginRight="1dp"
             android:layout_marginLeft="1dp"
