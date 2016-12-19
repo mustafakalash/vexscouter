@@ -34,7 +34,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static com.mkalash.vexscouter.MainActivity.getFullResults;
@@ -117,7 +119,9 @@ public class EventActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(view.getContext(), TeamActivity.class);
-            intent.putExtra("TEAM_NUM", ((Button) view).getText());
+            String teamNumber = ((Button) view).getText().toString();
+            teamNumber = teamNumber.replaceAll("\\s\\(\\d*\\)", "");
+            intent.putExtra("TEAM_NUM", teamNumber);
             view.getContext().startActivity(intent);
         }
     }
@@ -127,6 +131,7 @@ public class EventActivity extends AppCompatActivity {
         private ProgressBar progressBar;
         private LinearLayout matchTable;
         final ArrayList<Match> matches = new ArrayList<>();
+        private Map<String, Integer> teamRanks = new HashMap();
 
         void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
@@ -136,8 +141,14 @@ public class EventActivity extends AppCompatActivity {
         protected ArrayList<Match> doInBackground(LinearLayout... params) {
             this.matchTable = params[0];
             try {
-                String urlString = "https://api.vexdb.io/v1/get_matches?sku=" + sku;
+                String urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku;
                 JSONArray result = getFullResults(urlString);
+                for(int i = 0; i < result.length(); i++) {
+                    JSONObject rank = result.getJSONObject(i);
+                    teamRanks.put(rank.getString("team"), rank.getInt("rank"));
+                }
+                urlString = "https://api.vexdb.io/v1/get_matches?sku=" + sku;
+                result = getFullResults(urlString);
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject match = result.getJSONObject(i);
                     String name;
@@ -242,42 +253,66 @@ public class EventActivity extends AppCompatActivity {
                 TextView redScore = (TextView) matchRow.findViewById(R.id.red_score);
                 TextView blueScore = (TextView) matchRow.findViewById(R.id.blue_score);
 
-                red1.setText(match.red1);
+                if(teamRanks.keySet().contains(match.red1)) {
+                    red1.setText(match.red1 + " (" + teamRanks.get(match.red1) + ")");
+                } else {
+                    red1.setText(match.red1);
+                }
                 if(match.red1.equals(match.redSit)) {
                     red1.setBackgroundColor(redResultOut);
                 } else if(favoriteTeams.contains(match.red1)) {
                     red1.setBackgroundColor(highlightColor);
                 }
 
-                red2.setText(match.red2);
+                if(teamRanks.keySet().contains(match.red2)) {
+                    red2.setText(match.red2 + " (" + teamRanks.get(match.red2) + ")");
+                } else {
+                    red2.setText(match.red2);
+                }
                 if(match.red2.equals(match.redSit)) {
                     red2.setBackgroundColor(redResultOut);
                 } else if(favoriteTeams.contains(match.red2)) {
                     red2.setBackgroundColor(highlightColor);
                 }
 
-                red3.setText(match.red3);
+                if(teamRanks.keySet().contains(match.red3)) {
+                    red3.setText(match.red3 + " (" + teamRanks.get(match.red3) + ")");
+                } else {
+                    red3.setText(match.red3);
+                }
                 if(!match.red3.isEmpty() && match.red3.equals(match.redSit)) {
                     red3.setBackgroundColor(redResultOut);
                 } else if(favoriteTeams.contains(match.red3)) {
                     red3.setBackgroundColor(highlightColor);
                 }
 
-                blue1.setText(match.blue1);
+                if(teamRanks.keySet().contains(match.blue1)) {
+                    blue1.setText(match.blue1 + " (" + teamRanks.get(match.blue1) + ")");
+                } else {
+                    blue1.setText(match.blue1);
+                }
                 if(match.blue1.equals(match.blueSit)) {
                     blue1.setBackgroundColor(blueResultOut);
                 } else if(favoriteTeams.contains(match.blue1)) {
                     blue1.setBackgroundColor(highlightColor);
                 }
 
-                blue2.setText(match.blue2);
+                if(teamRanks.keySet().contains(match.blue2)) {
+                    blue2.setText(match.blue2 + " (" + teamRanks.get(match.blue2) + ")");
+                } else {
+                    blue2.setText(match.blue2);
+                }
                 if(match.blue2.equals(match.blueSit)) {
                     blue2.setBackgroundColor(blueResultOut);
                 } else if(favoriteTeams.contains(match.blue2)) {
                     blue2.setBackgroundColor(highlightColor);
                 }
 
-                blue3.setText(match.blue3);
+                if(teamRanks.keySet().contains(match.blue3)) {
+                    blue3.setText(match.blue3 + " (" + teamRanks.get(match.blue3) + ")");
+                } else {
+                    blue3.setText(match.blue3);
+                }
                 if(!match.blue3.isEmpty() && match.blue3.equals(match.blueSit)) {
                     blue3.setBackgroundColor(blueResultOut);
                 } else if(favoriteTeams.contains(match.blue3)) {
