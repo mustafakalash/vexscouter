@@ -672,4 +672,8 @@
 
     <string name="favorite_header">Favorites</string>
     <string name="all_header">All</string>
+
+    <string name="event_info">At %1$s:</string>
+    <string name="rank_info">Ranked #%1$.0f</string>
+    <string name="schedule">Schedule:</string>
 </resources>

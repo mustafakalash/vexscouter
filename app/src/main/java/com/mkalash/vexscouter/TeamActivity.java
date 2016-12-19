@@ -13,8 +13,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import android.widget.TextView;
+
 import static com.mkalash.vexscouter.MainActivity.fetchJSON;
 import static com.mkalash.vexscouter.MainActivity.getFullResults;
 
@@ -30,6 +33,8 @@ import java.util.Set;
 public class TeamActivity extends AppCompatActivity {
 
     private String teamNumber;
+    private String sku;
+    private String eventName;
     private final RetrieveRating retrieveRatingTask = new RetrieveRating();
     private Menu menu;
 
@@ -38,20 +43,19 @@ public class TeamActivity extends AppCompatActivity {
         private ProgressBar progressBar;
         private RatingBar ratingBar;
 
-        public void setProgressBar(ProgressBar bar) {
+        void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
         }
 
         @Override
         protected float[] doInBackground(RatingBar... params) {
             this.ratingBar = params[0];
-            float[] returnValue = new float[2];
+            float[] returnValue = new float[3];
 
             try {
                 String urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&program=VRC&nodata=true";
                 int size = fetchJSON(urlString).getInt("size");
                 returnValue[1] = (float) size;
-                publishProgress(50);
 
                 urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&team=" + teamNumber;
                 JSONArray result = getFullResults(urlString);
@@ -61,8 +65,14 @@ public class TeamActivity extends AppCompatActivity {
                     vRating = (float) team.getInt("vrating_rank");
                 }
                 returnValue[0] = vRating;
-                publishProgress(100);
 
+                if(sku != null) {
+                    urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku + "&team=" + teamNumber;
+                    result = getFullResults(urlString);
+                    if(result.length() > 0) {
+                        returnValue[2] = result.getJSONObject(0).getInt("rank");
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -83,6 +93,12 @@ public class TeamActivity extends AppCompatActivity {
             }
             ratingBar.setRating(rating);
 
+            if(result[2] > 0) {
+                ((TextView) findViewById(R.id.event_rank)).setText(String.format(getString(R.string.rank_info), result[2]));
+            } else if(sku != null) {
+                findViewById(R.id.event_rank).setVisibility(View.GONE);
+            }
+
             progressBar.setVisibility(View.GONE);
             progressBar.setProgress(0);
         }
@@ -95,7 +111,14 @@ public class TeamActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         teamNumber = intent.getStringExtra("TEAM_NUM");
-        setTitle(teamNumber);
+        sku = intent.getStringExtra("EVENT_SKU");
+        eventName = intent.getStringExtra("EVENT_NAME");
+
+        String title = teamNumber;
+        if(eventName != null) {
+            title += " @ " + eventName;
+        }
+        setTitle(title);
 
         ProgressBar progress = (ProgressBar) findViewById(R.id.team_progress);
         RatingBar ratingBar = (RatingBar) findViewById(R.id.vrating);
@@ -124,6 +147,15 @@ public class TeamActivity extends AppCompatActivity {
 
         Button saveButton = (Button) findViewById(R.id.save_notes);
         saveButton.setOnClickListener(new notesSaveListener());
+
+        if(sku != null) {
+            findViewById(R.id.event_information).setVisibility(View.VISIBLE);
+            ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), eventName));
+            LinearLayout eventSchedule = (LinearLayout) findViewById(R.id.event_schedule);
+            EventActivity.RetrieveMatches retrieveMatchesTask = new EventActivity.RetrieveMatches();
+            retrieveMatchesTask.setTeam(teamNumber);
+            retrieveMatchesTask.execute(eventSchedule);
+        }
     }
 
     @Override

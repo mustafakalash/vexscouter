@@ -122,6 +122,8 @@ public class EventActivity extends AppCompatActivity {
             String teamNumber = ((Button) view).getText().toString();
             teamNumber = teamNumber.replaceAll("\\s\\(\\d*\\)", "");
             intent.putExtra("TEAM_NUM", teamNumber);
+            intent.putExtra("EVENT_SKU", sku);
+            intent.putExtra("EVENT_NAME", name);
             view.getContext().startActivity(intent);
         }
     }
@@ -132,6 +134,11 @@ public class EventActivity extends AppCompatActivity {
         private LinearLayout matchTable;
         final ArrayList<Match> matches = new ArrayList<>();
         private Map<String, Integer> teamRanks = new HashMap();
+        private String team;
+
+        void setTeam(String team) {
+            this.team = team;
+        }
 
         void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
@@ -148,6 +155,9 @@ public class EventActivity extends AppCompatActivity {
                     teamRanks.put(rank.getString("team"), rank.getInt("rank"));
                 }
                 urlString = "https://api.vexdb.io/v1/get_matches?sku=" + sku;
+                if(team != null) {
+                    urlString += "&team=" + team;
+                }
                 result = getFullResults(urlString);
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject match = result.getJSONObject(i);
@@ -182,7 +192,6 @@ public class EventActivity extends AppCompatActivity {
                     boolean scored = "1".equals(match.getString("scored"));
                     Match matchObj = new Match(name, red1, red2, red3, redSit, blue1, blue2, blue3, blueSit, redScore, blueScore, scored);
                     matches.add(matchObj);
-                    publishProgress((int) (((i + 1) / (float) result.length()) * 100));
                     if(isCancelled()) {
                         break;
                     }
@@ -335,8 +344,10 @@ public class EventActivity extends AppCompatActivity {
                 }
             }
 
-            progressBar.setVisibility(View.GONE);
-            progressBar.setProgress(0);
+            if(progressBar != null) {
+                progressBar.setVisibility(View.GONE);
+                progressBar.setProgress(0);
+            }
         }
     }
 
@@ -364,7 +375,6 @@ public class EventActivity extends AppCompatActivity {
                         String team = rank.getString("number");
                         Rank rankObj = new Rank(team, i + 1, 0, 0, 0, 0, 0);
                         rankings.add(rankObj);
-                        publishProgress((int) (((i + 1) / (float) result.length()) * 100));
                         if (isCancelled()) {
                             break;
                         }
@@ -381,7 +391,6 @@ public class EventActivity extends AppCompatActivity {
                         double ccwm = rank.getDouble("ccwm");
                         Rank rankObj = new Rank(team, rankNum, wp, ap, sp, trsp, ccwm);
                         rankings.add(rankObj);
-                        publishProgress((int) (((i + 1) / (float) result.length()) * 100));
                         if (isCancelled()) {
                             break;
                         }
@@ -481,7 +490,6 @@ public class EventActivity extends AppCompatActivity {
 
                     Skill skillObj = new Skill(team, rank, attempts, score, type);
                     skills.add(skillObj);
-                    publishProgress((int) (((i + 1) / (float) result.length()) * 100));
                     if(isCancelled()) {
                         break;
                     }
