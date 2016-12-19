@@ -676,4 +676,6 @@
     <string name="event_info">At %1$s:</string>
     <string name="rank_info">Ranked #%1$.0f</string>
     <string name="schedule">Schedule:</string>
+
+    <string name="search">Search</string>
 </resources>
