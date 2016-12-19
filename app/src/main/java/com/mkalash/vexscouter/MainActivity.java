@@ -24,10 +24,13 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -37,6 +40,75 @@ import java.util.Set;
 import java.util.TreeMap;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static JSONObject fetchJSON(String urlString) {
+        StringBuilder json = new StringBuilder();
+        JSONObject jsonObject = new JSONObject();
+
+        URL url;
+        try {
+            url = new URL(urlString);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            return jsonObject;
+        }
+
+        BufferedReader in = null;
+        try {
+            in = new BufferedReader(new InputStreamReader(url.openStream()));
+            String str;
+            while ((str = in.readLine()) != null) {
+                json.append(str);
+            }
+        } catch(IOException e) {
+            e.printStackTrace();
+            return jsonObject;
+        } finally {
+            try {
+                if(in != null) {
+                    in.close();
+                }
+            } catch(IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
+            jsonObject = new JSONObject(json.toString());
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
+
+        return jsonObject;
+    }
+
+    public static JSONArray getFullResults(String urlString) {
+        JSONArray result = new JSONArray();
+
+        try {
+            JSONObject jsonObject = fetchJSON(urlString + "&nodata=true");
+            int fullDataSize = 0;
+            if (jsonObject != null) {
+                fullDataSize = jsonObject.getInt("size");
+            }
+            int dataSize = 0;
+            result = new JSONArray();
+            while(dataSize < fullDataSize) {
+                jsonObject = fetchJSON(urlString + "&limit_start=" + dataSize);
+                if (jsonObject != null) {
+                    JSONArray resultFragment = jsonObject.getJSONArray("result");
+                    for(int i = 0; i < resultFragment.length(); i++) {
+                        result.put(resultFragment.get(i));
+                    }
+                    dataSize += jsonObject.getInt("size");
+                }
+            }
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
 
     static class RetrieveEvents extends AsyncTask<ArrayAdapter<String>, Integer, Map<String, String>> {
 
@@ -66,21 +138,7 @@ public class MainActivity extends AppCompatActivity {
                 region = (region.equals("Any")) ? "" : region;
 
                 String urlString = ("https://api.vexdb.io/v1/get_events?season=" + season + "&country=" + country + "&region=" + region).replace(" ", "%20");
-                StringBuilder json = new StringBuilder();
-                URL url = new URL(urlString);
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                try {
-                    String str;
-                    while ((str = in.readLine()) != null) {
-                        json.append(str);
-                        if(isCancelled()) {
-                            break;
-                        }
-                    }
-                } finally {
-                    in.close();
-                }
-                JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
+                JSONArray result = getFullResults(urlString);
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject event = result.getJSONObject(i);
                     String name = event.getString("name");
@@ -135,21 +193,7 @@ public class MainActivity extends AppCompatActivity {
                 region = (region.equals("Any")) ? "" : region;
 
                 String urlString = ("https://api.vexdb.io/v1/get_teams?program=VRC&season=" + season + "&country=" + country + "&region=" + region).replace(" ", "%20");
-                StringBuilder json = new StringBuilder();
-                URL url = new URL(urlString);
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                try {
-                    String str;
-                    while ((str = in.readLine()) != null) {
-                        json.append(str);
-                        if(isCancelled()) {
-                            break;
-                        }
-                    }
-                } finally {
-                    in.close();
-                }
-                JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
+                JSONArray result = getFullResults(urlString);
                 List<String> teams = new ArrayList<>();
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject team = result.getJSONObject(i);

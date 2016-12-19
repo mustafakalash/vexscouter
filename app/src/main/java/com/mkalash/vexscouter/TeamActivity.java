@@ -15,6 +15,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
+import static com.mkalash.vexscouter.MainActivity.fetchJSON;
+import static com.mkalash.vexscouter.MainActivity.getFullResults;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -47,40 +49,12 @@ public class TeamActivity extends AppCompatActivity {
 
             try {
                 String urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&program=VRC&nodata=true";
-                StringBuilder json = new StringBuilder();
-                URL url = new URL(urlString);
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                try {
-                    String str;
-                    while ((str = in.readLine()) != null) {
-                        json.append(str);
-                        if(isCancelled()) {
-                            break;
-                        }
-                    }
-                } finally {
-                    in.close();
-                }
-                int size = new JSONObject(json.toString()).getInt("size");
+                int size = fetchJSON(urlString).getInt("size");
                 returnValue[1] = (float) size;
                 publishProgress(50);
 
                 urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&team=" + teamNumber;
-                json = new StringBuilder();
-                url = new URL(urlString);
-                in = new BufferedReader(new InputStreamReader(url.openStream()));
-                try {
-                    String str;
-                    while ((str = in.readLine()) != null) {
-                        json.append(str);
-                        if(isCancelled()) {
-                            break;
-                        }
-                    }
-                } finally {
-                    in.close();
-                }
-                JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
+                JSONArray result = getFullResults(urlString);
                 float vRating = (float) size;
                 if(result.length() == 1) {
                     JSONObject team = result.getJSONObject(0);
@@ -89,11 +63,11 @@ public class TeamActivity extends AppCompatActivity {
                 returnValue[0] = vRating;
                 publishProgress(100);
 
-                return returnValue;
             } catch (Exception e) {
                 e.printStackTrace();
-                return null;
             }
+
+            return returnValue;
         }
 
         @Override

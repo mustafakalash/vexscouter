@@ -37,6 +37,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
+import static com.mkalash.vexscouter.MainActivity.getFullResults;
+
 public class EventActivity extends AppCompatActivity {
 
     private static String name;
@@ -45,11 +47,11 @@ public class EventActivity extends AppCompatActivity {
     private Menu menu;
 
     static class Skill {
-        private final String team;
-        private final int rank;
-        private final int attempts;
-        private final int score;
-        private final int type;
+        final String team;
+        final int rank;
+        final int attempts;
+        final int score;
+        final int type;
 
         Skill(String team, int rank, int attempts, int score, int type) {
             this.team = team;
@@ -58,36 +60,16 @@ public class EventActivity extends AppCompatActivity {
             this.score = score;
             this.type = type;
         }
-
-        String getTeam() {
-            return team;
-        }
-
-        int getRank() {
-            return rank;
-        }
-
-        int getAttempts() {
-            return attempts;
-        }
-
-        int getScore() {
-            return score;
-        }
-
-        int getType() {
-            return type;
-        }
     }
 
     static class Rank {
-        private final String team;
-        private final int rank;
-        private final int wp;
-        private final int ap;
-        private final int sp;
-        private final int trsp;
-        private final double ccwm;
+        final String team;
+        final int rank;
+        final int wp;
+        final int ap;
+        final int sp;
+        final int trsp;
+        final double ccwm;
 
         Rank(String team, int rank, int wp, int ap, int sp, int trsp, double ccwm) {
             this.team = team;
@@ -98,49 +80,21 @@ public class EventActivity extends AppCompatActivity {
             this.trsp = trsp;
             this.ccwm = ccwm;
         }
-
-        String getTeam() {
-            return team;
-        }
-
-        int getRank() {
-            return rank;
-        }
-
-        int getWP() {
-            return wp;
-        }
-
-        int getAP() {
-            return ap;
-        }
-
-        int getTRSP() {
-            return trsp;
-        }
-
-        double getCCWM() {
-            return ccwm;
-        }
-
-        int getSP() {
-            return sp;
-        }
     }
 
     static class Match {
-        private final String name;
-        private final String red1;
-        private final String red2;
-        private final String red3;
-        private final String redSit;
-        private final String blue1;
-        private final String blue2;
-        private final String blue3;
-        private final String blueSit;
-        private final int redScore;
-        private final int blueScore;
-        private final boolean scored;
+        final String name;
+        final String red1;
+        final String red2;
+        final String red3;
+        final String redSit;
+        final String blue1;
+        final String blue2;
+        final String blue3;
+        final String blueSit;
+        final int redScore;
+        final int blueScore;
+        final boolean scored;
 
         Match(String name, String red1, String red2, String red3, String redSit, String blue1, String blue2, String blue3, String blueSit, int redScore, int blueScore, boolean scored) {
             this.name = name;
@@ -155,54 +109,6 @@ public class EventActivity extends AppCompatActivity {
             this.redScore = redScore;
             this.blueScore = blueScore;
             this.scored = scored;
-        }
-
-        String getRed1() {
-            return red1;
-        }
-
-        String getRed2() {
-            return red2;
-        }
-
-        String getBlue1() {
-            return blue1;
-        }
-
-        String getBlue2() {
-            return blue2;
-        }
-
-        int getRedScore() {
-            return redScore;
-        }
-
-        int getBlueScore() {
-            return blueScore;
-        }
-
-        String getRed3() {
-            return red3;
-        }
-
-        String getRedSit() {
-            return redSit;
-        }
-
-        String getBlue3() {
-            return blue3;
-        }
-
-        String getBlueSit() {
-            return blueSit;
-        }
-
-        boolean isScored() {
-            return scored;
-        }
-
-        public String getName() {
-            return name;
         }
     }
 
@@ -231,21 +137,7 @@ public class EventActivity extends AppCompatActivity {
             this.matchTable = params[0];
             try {
                 String urlString = "https://api.vexdb.io/v1/get_matches?sku=" + sku;
-                StringBuilder json = new StringBuilder();
-                URL url = new URL(urlString);
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                try {
-                    String str;
-                    while ((str = in.readLine()) != null) {
-                        json.append(str);
-                        if(isCancelled()) {
-                            break;
-                        }
-                    }
-                } finally {
-                    in.close();
-                }
-                JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
+                JSONArray result = getFullResults(urlString);
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject match = result.getJSONObject(i);
                     String name;
@@ -319,7 +211,7 @@ public class EventActivity extends AppCompatActivity {
                 matchTable.addView(matchRow);
 
                 TextView matchName = (TextView) matchRow.findViewById(R.id.match_name);
-                matchName.setText(match.getName());
+                matchName.setText(match.name);
 
                 Button red1 = (Button) matchRow.findViewById(R.id.red1);
                 red1.setOnClickListener(teamClickListener);
@@ -328,7 +220,7 @@ public class EventActivity extends AppCompatActivity {
                 red2.setOnClickListener(teamClickListener);
 
                 Button red3 = (Button) matchRow.findViewById(R.id.red3);
-                if(!match.getRed3().isEmpty()) {
+                if(!match.red3.isEmpty()) {
                     red3.setOnClickListener(teamClickListener);
                 }
 
@@ -339,55 +231,55 @@ public class EventActivity extends AppCompatActivity {
                 blue2.setOnClickListener(teamClickListener);
 
                 Button blue3 = (Button) matchRow.findViewById(R.id.blue3);
-                if(!match.getBlue3().isEmpty()) {
+                if(!match.blue3.isEmpty()) {
                     blue3.setOnClickListener(teamClickListener);
                 }
 
                 TextView redScore = (TextView) matchRow.findViewById(R.id.red_score);
                 TextView blueScore = (TextView) matchRow.findViewById(R.id.blue_score);
 
-                red1.setText(match.getRed1());
-                if(match.getRed1().equals(match.getRedSit())) {
+                red1.setText(match.red1);
+                if(match.red1.equals(match.redSit)) {
                     red1.setBackgroundColor(redResultOut);
                 }
 
-                red2.setText(match.getRed2());
-                if(match.getRed2().equals(match.getRedSit())) {
+                red2.setText(match.red2);
+                if(match.red2.equals(match.redSit)) {
                     red2.setBackgroundColor(redResultOut);
                 }
 
-                red3.setText(match.getRed3());
-                if(!match.getRed3().isEmpty() && match.getRed3().equals(match.getRedSit())) {
+                red3.setText(match.red3);
+                if(!match.red3.isEmpty() && match.red3.equals(match.redSit)) {
                     red3.setBackgroundColor(redResultOut);
                 }
 
-                blue1.setText(match.getBlue1());
-                if(match.getBlue1().equals(match.getBlueSit())) {
+                blue1.setText(match.blue1);
+                if(match.blue1.equals(match.blueSit)) {
                     blue1.setBackgroundColor(blueResultOut);
                 }
 
-                blue2.setText(match.getBlue2());
-                if(match.getBlue2().equals(match.getBlueSit())) {
+                blue2.setText(match.blue2);
+                if(match.blue2.equals(match.blueSit)) {
                     blue2.setBackgroundColor(blueResultOut);
                 }
 
-                blue3.setText(match.getBlue3());
-                if(!match.getBlue3().isEmpty() && match.getBlue3().equals(match.getBlueSit())) {
+                blue3.setText(match.blue3);
+                if(!match.blue3.isEmpty() && match.blue3.equals(match.blueSit)) {
                     blue3.setBackgroundColor(blueResultOut);
                 }
 
-                if(!match.isScored()) {
+                if(!match.scored) {
                     redScore.setBackgroundColor(redResultOut);
                     blueScore.setBackgroundColor(blueResultOut);
                 }
 
-                redScore.setText(Integer.toString(match.getRedScore()));
-                if(match.getRedScore() > match.getBlueScore()) {
+                redScore.setText(Integer.toString(match.redScore));
+                if(match.redScore > match.blueScore) {
                     redScore.setTypeface(null, Typeface.BOLD);
                 }
 
-                blueScore.setText(Integer.toString(match.getBlueScore()));
-                if(match.getBlueScore() > match.getRedScore()) {
+                blueScore.setText(Integer.toString(match.blueScore));
+                if(match.blueScore > match.redScore) {
                     blueScore.setTypeface(null, Typeface.BOLD);
                 }
             }
@@ -412,38 +304,10 @@ public class EventActivity extends AppCompatActivity {
             this.rankingTable = params[0];
             try {
                 String urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku;
-                StringBuilder json = new StringBuilder();
-                URL url = new URL(urlString);
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                try {
-                    String str;
-                    while ((str = in.readLine()) != null) {
-                        json.append(str);
-                        if(isCancelled()) {
-                            break;
-                        }
-                    }
-                } finally {
-                    in.close();
-                }
-                JSONObject jsonObject = new JSONObject(json.toString());
-                if(jsonObject.getInt("size") == 0) {
+                JSONArray result = getFullResults(urlString);
+                if(result.length() == 0) {
                     urlString = "https://api.vexdb.io/v1/get_teams?sku=" + sku;
-                    json = new StringBuilder();
-                    url = new URL(urlString);
-                    in = new BufferedReader(new InputStreamReader(url.openStream()));
-                    try {
-                        String str;
-                        while ((str = in.readLine()) != null) {
-                            json.append(str);
-                            if(isCancelled()) {
-                                break;
-                            }
-                        }
-                    } finally {
-                        in.close();
-                    }
-                    JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
+                    result = getFullResults(urlString);
                     for (int i = 0; i < result.length(); i++) {
                         JSONObject rank = result.getJSONObject(i);
                         String team = rank.getString("number");
@@ -455,7 +319,6 @@ public class EventActivity extends AppCompatActivity {
                         }
                     }
                 } else {
-                    JSONArray result = jsonObject.getJSONArray("result");
                     for (int i = 0; i < result.length(); i++) {
                         JSONObject rank = result.getJSONObject(i);
                         String team = rank.getString("team");
@@ -507,26 +370,26 @@ public class EventActivity extends AppCompatActivity {
                 rankingTable.addView(rankRow);
 
                 TextView rankNum = (TextView) rankRow.findViewById(R.id.rank);
-                rankNum.setText(Integer.toString(rank.getRank()));
+                rankNum.setText(Integer.toString(rank.rank));
 
                 Button team = (Button) rankRow.findViewById(R.id.team);
                 team.setOnClickListener(teamClickListener);
-                team.setText(rank.getTeam());
+                team.setText(rank.team);
 
                 TextView wp = (TextView) rankRow.findViewById(R.id.wp);
-                wp.setText(Integer.toString(rank.getWP()));
+                wp.setText(Integer.toString(rank.wp));
 
                 TextView ap = (TextView) rankRow.findViewById(R.id.ap);
-                ap.setText(Integer.toString(rank.getAP()));
+                ap.setText(Integer.toString(rank.ap));
 
                 TextView sp = (TextView) rankRow.findViewById(R.id.sp);
-                sp.setText(Integer.toString(rank.getSP()));
+                sp.setText(Integer.toString(rank.sp));
 
                 TextView trsp = (TextView) rankRow.findViewById(R.id.trsp);
-                trsp.setText(Integer.toString(rank.getTRSP()));
+                trsp.setText(Integer.toString(rank.trsp));
 
                 TextView ccwm = (TextView) rankRow.findViewById(R.id.ccwm);
-                ccwm.setText(String.format("%.1f", rank.getCCWM()));
+                ccwm.setText(String.format("%.1f", rank.ccwm));
             }
 
             progressBar.setVisibility(View.GONE);
@@ -549,21 +412,7 @@ public class EventActivity extends AppCompatActivity {
             this.skillsTable = params[0];
             try {
                 String urlString = "https://api.vexdb.io/v1/get_skills?sku=" + sku;
-                StringBuilder json = new StringBuilder();
-                URL url = new URL(urlString);
-                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                try {
-                    String str;
-                    while ((str = in.readLine()) != null) {
-                        json.append(str);
-                        if(isCancelled()) {
-                            break;
-                        }
-                    }
-                } finally {
-                    in.close();
-                }
-                JSONArray result = new JSONObject(json.toString()).getJSONArray("result");
+                JSONArray result = getFullResults(urlString);
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject skill = result.getJSONObject(i);
                     String team = skill.getString("team");
@@ -634,7 +483,7 @@ public class EventActivity extends AppCompatActivity {
                     skillsTable.addView(skillType);
 
                     for (Skill skill : skills) {
-                        if (skill.getType() != i) {
+                        if (skill.type != i) {
                             continue;
                         }
 
@@ -642,17 +491,17 @@ public class EventActivity extends AppCompatActivity {
                         skillsTable.addView(skillRow);
 
                         TextView rank = (TextView) skillRow.findViewById(R.id.rank);
-                        rank.setText(Integer.toString(skill.getRank()));
+                        rank.setText(Integer.toString(skill.rank));
 
                         Button team = (Button) skillRow.findViewById(R.id.team);
-                        team.setText(skill.getTeam());
+                        team.setText(skill.team);
                         team.setOnClickListener(teamClickListener);
 
                         TextView attempts = (TextView) skillRow.findViewById(R.id.attempts);
-                        attempts.setText(Integer.toString(skill.getAttempts()));
+                        attempts.setText(Integer.toString(skill.attempts));
 
                         TextView score = (TextView) skillRow.findViewById(R.id.score);
-                        score.setText(Integer.toString(skill.getScore()));
+                        score.setText(Integer.toString(skill.score));
 
                     }
                 }
