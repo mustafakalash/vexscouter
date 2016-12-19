@@ -77,7 +77,10 @@ public class TeamActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(float[] result) {
-            float rating = 10f - ((10f * result[0]) / result[1]);
+            float rating = 0;
+            if(result[1] > 0) {
+                rating = 10f - ((10f * result[0]) / result[1]);
+            }
             ratingBar.setRating(rating);
 
             progressBar.setVisibility(View.GONE);

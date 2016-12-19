@@ -193,6 +193,7 @@ public class EventActivity extends AppCompatActivity {
             int redResultOut = ResourcesCompat.getColor(matchTable.getResources(), R.color.redResultOut, null);
             int blueResultOut = ResourcesCompat.getColor(matchTable.getResources(), R.color.blueResultOut, null);
             int whiteColor = ResourcesCompat.getColor(matchTable.getResources(), R.color.white, null);
+            int highlightColor = ResourcesCompat.getColor(matchTable.getResources(), R.color.highlightColor, null);
 
             TeamClickListener teamClickListener = new TeamClickListener();
 
@@ -202,6 +203,9 @@ public class EventActivity extends AppCompatActivity {
                 matchTable.addView(emptyPage);
                 matchTable.setBackgroundColor(whiteColor);
             }
+
+            final SharedPreferences sharedPref = matchTable.getContext().getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+            Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
 
             LayoutInflater inflater = (LayoutInflater) matchTable.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -241,31 +245,43 @@ public class EventActivity extends AppCompatActivity {
                 red1.setText(match.red1);
                 if(match.red1.equals(match.redSit)) {
                     red1.setBackgroundColor(redResultOut);
+                } else if(favoriteTeams.contains(match.red1)) {
+                    red1.setBackgroundColor(highlightColor);
                 }
 
                 red2.setText(match.red2);
                 if(match.red2.equals(match.redSit)) {
                     red2.setBackgroundColor(redResultOut);
+                } else if(favoriteTeams.contains(match.red2)) {
+                    red2.setBackgroundColor(highlightColor);
                 }
 
                 red3.setText(match.red3);
                 if(!match.red3.isEmpty() && match.red3.equals(match.redSit)) {
                     red3.setBackgroundColor(redResultOut);
+                } else if(favoriteTeams.contains(match.red3)) {
+                    red3.setBackgroundColor(highlightColor);
                 }
 
                 blue1.setText(match.blue1);
                 if(match.blue1.equals(match.blueSit)) {
                     blue1.setBackgroundColor(blueResultOut);
+                } else if(favoriteTeams.contains(match.blue1)) {
+                    blue1.setBackgroundColor(highlightColor);
                 }
 
                 blue2.setText(match.blue2);
                 if(match.blue2.equals(match.blueSit)) {
                     blue2.setBackgroundColor(blueResultOut);
+                } else if(favoriteTeams.contains(match.blue2)) {
+                    blue2.setBackgroundColor(highlightColor);
                 }
 
                 blue3.setText(match.blue3);
                 if(!match.blue3.isEmpty() && match.blue3.equals(match.blueSit)) {
                     blue3.setBackgroundColor(blueResultOut);
+                } else if(favoriteTeams.contains(match.blue3)) {
+                    blue3.setBackgroundColor(highlightColor);
                 }
 
                 if(!match.scored) {
@@ -352,6 +368,7 @@ public class EventActivity extends AppCompatActivity {
         protected void onPostExecute(ArrayList<Rank> rankings) {
 
             int whiteColor = ResourcesCompat.getColor(rankingTable.getResources(), R.color.white, null);
+            int highlightColor = ResourcesCompat.getColor(rankingTable.getResources(), R.color.highlightColor, null);
 
             TeamClickListener teamClickListener = new TeamClickListener();
 
@@ -361,6 +378,9 @@ public class EventActivity extends AppCompatActivity {
                 rankingTable.addView(emptyPage);
                 rankingTable.setBackgroundColor(whiteColor);
             }
+
+            final SharedPreferences sharedPref = rankingTable.getContext().getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+            Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
 
             LayoutInflater inflater = (LayoutInflater) rankingTable.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -375,6 +395,9 @@ public class EventActivity extends AppCompatActivity {
                 Button team = (Button) rankRow.findViewById(R.id.team);
                 team.setOnClickListener(teamClickListener);
                 team.setText(rank.team);
+                if(favoriteTeams.contains(rank.team)) {
+                    team.setBackgroundColor(highlightColor);
+                }
 
                 TextView wp = (TextView) rankRow.findViewById(R.id.wp);
                 wp.setText(Integer.toString(rank.wp));
@@ -445,6 +468,10 @@ public class EventActivity extends AppCompatActivity {
 
             int whiteColor = ResourcesCompat.getColor(skillsTable.getResources(), R.color.white, null);
             int accentColor = ResourcesCompat.getColor(skillsTable.getResources(), R.color.colorAccent, null);
+            int highlightColor = ResourcesCompat.getColor(skillsTable.getResources(), R.color.highlightColor, null);
+
+            final SharedPreferences sharedPref = skillsTable.getContext().getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+            Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
 
             float density = skillsTable.getResources().getDisplayMetrics().density;
 
@@ -496,6 +523,9 @@ public class EventActivity extends AppCompatActivity {
                         Button team = (Button) skillRow.findViewById(R.id.team);
                         team.setText(skill.team);
                         team.setOnClickListener(teamClickListener);
+                        if(favoriteTeams.contains(skill.team)) {
+                            team.setBackgroundColor(highlightColor);
+                        }
 
                         TextView attempts = (TextView) skillRow.findViewById(R.id.attempts);
                         attempts.setText(Integer.toString(skill.attempts));

@@ -8,4 +8,5 @@
     <color name="redResultOut">#FEE7E7</color>
     <color name="blueResult">#B6D6FB</color>
     <color name="blueResultOut">#E7F1FE</color>
+    <color name="highlightColor">#E0DD3D</color>
 </resources>
