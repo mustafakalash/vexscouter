@@ -10,6 +10,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
@@ -22,20 +23,22 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -47,6 +50,299 @@ public class EventActivity extends AppCompatActivity {
     private static String sku;
 
     private Menu menu;
+
+    private static class RankingListAdapter extends ArrayAdapter<Rank>  {
+
+        private LayoutInflater inflater;
+        int highlightColor;
+        Set<String> favoriteTeams;
+        TeamClickListener teamClickListener;
+        List<Rank> items;
+        int whiteColor;
+
+        RankingListAdapter(Context context, int resource, List<Rank> items) {
+            super(context, resource, items);
+            this.items = items;
+            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            highlightColor = ResourcesCompat.getColor(context.getResources(), R.color.highlightColor, null);
+            whiteColor = ResourcesCompat.getColor(context.getResources(), R.color.white, null);
+            final SharedPreferences sharedPref = context.getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+            favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
+            teamClickListener = new TeamClickListener();
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            if(convertView == null) {
+                convertView = inflater.inflate(R.layout.template_event_rankings, parent, false);
+            }
+
+            Rank rank = getItem(position);
+
+            if(rank != null) {
+                TextView rankNum = (TextView) convertView.findViewById(R.id.rank);
+                rankNum.setText(Integer.toString(rank.rank));
+
+                Button team = (Button) convertView.findViewById(R.id.team);
+                team.setOnClickListener(teamClickListener);
+                team.setText(rank.team);
+                if (favoriteTeams.contains(rank.team)) {
+                    team.setBackgroundColor(highlightColor);
+                } else {
+                    team.setBackgroundColor(whiteColor);
+                }
+
+                TextView wp = (TextView) convertView.findViewById(R.id.wp);
+                wp.setText(Integer.toString(rank.wp));
+
+                TextView ap = (TextView) convertView.findViewById(R.id.ap);
+                ap.setText(Integer.toString(rank.ap));
+
+                TextView sp = (TextView) convertView.findViewById(R.id.sp);
+                sp.setText(Integer.toString(rank.sp));
+
+                TextView trsp = (TextView) convertView.findViewById(R.id.trsp);
+                trsp.setText(Integer.toString(rank.trsp));
+
+                TextView ccwm = (TextView) convertView.findViewById(R.id.ccwm);
+                ccwm.setText(String.format("%.1f", rank.ccwm));
+            }
+
+            return convertView;
+        }
+    }
+
+    private static class MatchListAdapter extends ArrayAdapter<Match> {
+
+        private LayoutInflater inflater;
+        int highlightColor;
+        Set<String> favoriteTeams;
+        TeamClickListener teamClickListener;
+        List<Match> items;
+        int redResultOut;
+        int blueResultOut;
+        Map<String, Integer> teamRanks;
+        int blueResult;
+        int redResult;
+
+        MatchListAdapter(Context context, int resource, List<Match> items, Map<String, Integer> teamRanks) {
+            super(context, resource, items);
+            this.items = items;
+            this.teamRanks = teamRanks;
+            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            highlightColor = ResourcesCompat.getColor(context.getResources(), R.color.highlightColor, null);
+            redResult = ResourcesCompat.getColor(context.getResources(), R.color.redResult, null);
+            blueResult = ResourcesCompat.getColor(context.getResources(), R.color.blueResult, null);
+            final SharedPreferences sharedPref = context.getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+            favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
+            teamClickListener = new TeamClickListener();
+            redResultOut = ResourcesCompat.getColor(context.getResources(), R.color.redResultOut, null);
+            blueResultOut = ResourcesCompat.getColor(context.getResources(), R.color.blueResultOut, null);
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            if(convertView == null) {
+                convertView = inflater.inflate(R.layout.template_event_matches, parent, false);
+            }
+
+            Match match = getItem(position);
+
+            if(match != null) {
+                TextView matchName = (TextView) convertView.findViewById(R.id.match_name);
+                matchName.setText(match.name);
+
+                Button red1 = (Button) convertView.findViewById(R.id.red1);
+                red1.setOnClickListener(teamClickListener);
+
+                Button red2 = (Button) convertView.findViewById(R.id.red2);
+                red2.setOnClickListener(teamClickListener);
+
+                Button red3 = (Button) convertView.findViewById(R.id.red3);
+                if (!match.red3.isEmpty()) {
+                    red3.setOnClickListener(teamClickListener);
+                }
+
+                Button blue1 = (Button) convertView.findViewById(R.id.blue1);
+                blue1.setOnClickListener(teamClickListener);
+
+                Button blue2 = (Button) convertView.findViewById(R.id.blue2);
+                blue2.setOnClickListener(teamClickListener);
+
+                Button blue3 = (Button) convertView.findViewById(R.id.blue3);
+                if (!match.blue3.isEmpty()) {
+                    blue3.setOnClickListener(teamClickListener);
+                }
+
+                TextView redScore = (TextView) convertView.findViewById(R.id.red_score);
+                TextView blueScore = (TextView) convertView.findViewById(R.id.blue_score);
+
+                if (teamRanks.keySet().contains(match.red1)) {
+                    red1.setText(match.red1 + " (" + teamRanks.get(match.red1) + ")");
+                } else {
+                    red1.setText(match.red1);
+                }
+                if (match.red1.equals(match.redSit)) {
+                    red1.setBackgroundColor(redResultOut);
+                } else if (favoriteTeams.contains(match.red1)) {
+                    red1.setBackgroundColor(highlightColor);
+                } else {
+                    red1.setBackgroundColor(redResult);
+                }
+
+                if (teamRanks.keySet().contains(match.red2)) {
+                    red2.setText(match.red2 + " (" + teamRanks.get(match.red2) + ")");
+                } else {
+                    red2.setText(match.red2);
+                }
+                if (match.red2.equals(match.redSit)) {
+                    red2.setBackgroundColor(redResultOut);
+                } else if (favoriteTeams.contains(match.red2)) {
+                    red2.setBackgroundColor(highlightColor);
+                } else {
+                    red2.setBackgroundColor(redResult);
+                }
+
+                if (teamRanks.keySet().contains(match.red3)) {
+                    red3.setText(match.red3 + " (" + teamRanks.get(match.red3) + ")");
+                } else {
+                    red3.setText(match.red3);
+                }
+                if (!match.red3.isEmpty() && match.red3.equals(match.redSit)) {
+                    red3.setBackgroundColor(redResultOut);
+                } else if (favoriteTeams.contains(match.red3)) {
+                    red3.setBackgroundColor(highlightColor);
+                } else {
+                    red3.setBackgroundColor(redResult);
+                }
+
+                if (teamRanks.keySet().contains(match.blue1)) {
+                    blue1.setText(match.blue1 + " (" + teamRanks.get(match.blue1) + ")");
+                } else {
+                    blue1.setText(match.blue1);
+                }
+                if (match.blue1.equals(match.blueSit)) {
+                    blue1.setBackgroundColor(blueResultOut);
+                } else if (favoriteTeams.contains(match.blue1)) {
+                    blue1.setBackgroundColor(highlightColor);
+                } else {
+                    blue1.setBackgroundColor(blueResult);
+                }
+
+                if (teamRanks.keySet().contains(match.blue2)) {
+                    blue2.setText(match.blue2 + " (" + teamRanks.get(match.blue2) + ")");
+                } else {
+                    blue2.setText(match.blue2);
+                }
+                if (match.blue2.equals(match.blueSit)) {
+                    blue2.setBackgroundColor(blueResultOut);
+                } else if (favoriteTeams.contains(match.blue2)) {
+                    blue2.setBackgroundColor(highlightColor);
+                } else {
+                    blue2.setBackgroundColor(blueResult);
+                }
+
+                if (teamRanks.keySet().contains(match.blue3)) {
+                    blue3.setText(match.blue3 + " (" + teamRanks.get(match.blue3) + ")");
+                } else {
+                    blue3.setText(match.blue3);
+                }
+                if (!match.blue3.isEmpty() && match.blue3.equals(match.blueSit)) {
+                    blue3.setBackgroundColor(blueResultOut);
+                } else if (favoriteTeams.contains(match.blue3)) {
+                    blue3.setBackgroundColor(highlightColor);
+                } else {
+                    blue3.setBackgroundColor(blueResult);
+                }
+
+                if (!match.scored) {
+                    redScore.setBackgroundColor(redResultOut);
+                    blueScore.setBackgroundColor(blueResultOut);
+                }
+
+                redScore.setText(Integer.toString(match.redScore));
+                if (match.redScore > match.blueScore) {
+                    redScore.setTypeface(null, Typeface.BOLD);
+                }
+
+                blueScore.setText(Integer.toString(match.blueScore));
+                if (match.blueScore > match.redScore) {
+                    blueScore.setTypeface(null, Typeface.BOLD);
+                }
+            }
+
+            return convertView;
+        }
+    }
+
+    private static class SkillsListAdapter extends ArrayAdapter<Skill> {
+
+        private LayoutInflater inflater;
+        int highlightColor;
+        Set<String> favoriteTeams;
+        TeamClickListener teamClickListener;
+        List<Skill> items;
+        int whiteColor;
+
+        SkillsListAdapter(Context context, int resource, List<Skill> items) {
+            super(context, resource, items);
+            this.items = items;
+            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            highlightColor = ResourcesCompat.getColor(context.getResources(), R.color.highlightColor, null);
+            whiteColor = ResourcesCompat.getColor(context.getResources(), R.color.white, null);
+            final SharedPreferences sharedPref = context.getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+            favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
+            teamClickListener = new TeamClickListener();
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+            if (convertView == null) {
+                convertView = inflater.inflate(R.layout.template_event_skills, parent, false);
+            }
+
+            Skill skill = getItem(position);
+
+            if (skill != null) {
+                TextView type = (TextView) convertView.findViewById(R.id.type);
+                switch(skill.type) {
+                    default:
+                    case 2:
+                        type.setText(R.string.robot_skills);
+                        break;
+                    case 1:
+                        type.setText(R.string.auton_skills);
+                        break;
+                    case 0:
+                        type.setText(R.string.driver_skills);
+                        break;
+                }
+
+                TextView rank = (TextView) convertView.findViewById(R.id.rank);
+                rank.setText(Integer.toString(skill.rank));
+
+                Button team = (Button) convertView.findViewById(R.id.team);
+                team.setText(skill.team);
+                team.setOnClickListener(teamClickListener);
+                if(favoriteTeams.contains(skill.team)) {
+                    team.setBackgroundColor(highlightColor);
+                } else {
+                    team.setBackgroundColor(whiteColor);
+                }
+
+                TextView attempts = (TextView) convertView.findViewById(R.id.attempts);
+                attempts.setText(Integer.toString(skill.attempts));
+
+                TextView score = (TextView) convertView.findViewById(R.id.score);
+                score.setText(Integer.toString(skill.score));
+            }
+
+            return convertView;
+        }
+    }
 
     static class Skill {
         final String team;
@@ -128,10 +424,10 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    static class RetrieveMatches extends AsyncTask<LinearLayout, Integer, ArrayList<Match>> {
+    static class RetrieveMatches extends AsyncTask<ListView, Integer, ArrayList<Match>> {
 
         private ProgressBar progressBar;
-        private LinearLayout matchTable;
+        private ListView matchList;
         final ArrayList<Match> matches = new ArrayList<>();
         private Map<String, Integer> teamRanks = new HashMap();
         private String team;
@@ -145,8 +441,8 @@ public class EventActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<Match> doInBackground(LinearLayout... params) {
-            this.matchTable = params[0];
+        protected ArrayList<Match> doInBackground(ListView... params) {
+            this.matchList = params[0];
             try {
                 String urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku;
                 JSONArray result = getFullResults(urlString);
@@ -210,138 +506,24 @@ public class EventActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<Match> matches) {
-            int redResultOut = ResourcesCompat.getColor(matchTable.getResources(), R.color.redResultOut, null);
-            int blueResultOut = ResourcesCompat.getColor(matchTable.getResources(), R.color.blueResultOut, null);
-            int whiteColor = ResourcesCompat.getColor(matchTable.getResources(), R.color.white, null);
-            int highlightColor = ResourcesCompat.getColor(matchTable.getResources(), R.color.highlightColor, null);
-
-            TeamClickListener teamClickListener = new TeamClickListener();
+            int whiteColor = ResourcesCompat.getColor(matchList.getResources(), R.color.white, null);
 
             if(matches.size() == 0) {
-                TextView emptyPage = new TextView(matchTable.getContext());
+                TextView emptyPage = new TextView(matchList.getContext());
                 emptyPage.setText(R.string.no_results);
-                matchTable.addView(emptyPage);
-                matchTable.setBackgroundColor(whiteColor);
-            }
+                matchList.addView(emptyPage);
+                matchList.setBackgroundColor(whiteColor);
+            } else {
+                LayoutInflater inflater = (LayoutInflater) matchList.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LinearLayout container = (LinearLayout) matchList.getParent();
+                LinearLayout header = (LinearLayout) inflater.inflate(R.layout.template_event_headers,
+                        container, false);
+                LinearLayout matchesTableHeader = (LinearLayout) header.findViewById(R.id.template_matches_header);
+                header.removeView(matchesTableHeader);
+                container.addView(matchesTableHeader, 1);
 
-            final SharedPreferences sharedPref = matchTable.getContext().getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
-            Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
-
-            LayoutInflater inflater = (LayoutInflater) matchTable.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            for(Match match : matches) {
-                LinearLayout matchRow = (LinearLayout) inflater.inflate(R.layout.template_event_matches,
-                        matchTable, false);
-                matchTable.addView(matchRow);
-
-                TextView matchName = (TextView) matchRow.findViewById(R.id.match_name);
-                matchName.setText(match.name);
-
-                Button red1 = (Button) matchRow.findViewById(R.id.red1);
-                red1.setOnClickListener(teamClickListener);
-
-                Button red2 = (Button) matchRow.findViewById(R.id.red2);
-                red2.setOnClickListener(teamClickListener);
-
-                Button red3 = (Button) matchRow.findViewById(R.id.red3);
-                if(!match.red3.isEmpty()) {
-                    red3.setOnClickListener(teamClickListener);
-                }
-
-                Button blue1 = (Button) matchRow.findViewById(R.id.blue1);
-                blue1.setOnClickListener(teamClickListener);
-
-                Button blue2 = (Button) matchRow.findViewById(R.id.blue2);
-                blue2.setOnClickListener(teamClickListener);
-
-                Button blue3 = (Button) matchRow.findViewById(R.id.blue3);
-                if(!match.blue3.isEmpty()) {
-                    blue3.setOnClickListener(teamClickListener);
-                }
-
-                TextView redScore = (TextView) matchRow.findViewById(R.id.red_score);
-                TextView blueScore = (TextView) matchRow.findViewById(R.id.blue_score);
-
-                if(teamRanks.keySet().contains(match.red1)) {
-                    red1.setText(match.red1 + " (" + teamRanks.get(match.red1) + ")");
-                } else {
-                    red1.setText(match.red1);
-                }
-                if(match.red1.equals(match.redSit)) {
-                    red1.setBackgroundColor(redResultOut);
-                } else if(favoriteTeams.contains(match.red1)) {
-                    red1.setBackgroundColor(highlightColor);
-                }
-
-                if(teamRanks.keySet().contains(match.red2)) {
-                    red2.setText(match.red2 + " (" + teamRanks.get(match.red2) + ")");
-                } else {
-                    red2.setText(match.red2);
-                }
-                if(match.red2.equals(match.redSit)) {
-                    red2.setBackgroundColor(redResultOut);
-                } else if(favoriteTeams.contains(match.red2)) {
-                    red2.setBackgroundColor(highlightColor);
-                }
-
-                if(teamRanks.keySet().contains(match.red3)) {
-                    red3.setText(match.red3 + " (" + teamRanks.get(match.red3) + ")");
-                } else {
-                    red3.setText(match.red3);
-                }
-                if(!match.red3.isEmpty() && match.red3.equals(match.redSit)) {
-                    red3.setBackgroundColor(redResultOut);
-                } else if(favoriteTeams.contains(match.red3)) {
-                    red3.setBackgroundColor(highlightColor);
-                }
-
-                if(teamRanks.keySet().contains(match.blue1)) {
-                    blue1.setText(match.blue1 + " (" + teamRanks.get(match.blue1) + ")");
-                } else {
-                    blue1.setText(match.blue1);
-                }
-                if(match.blue1.equals(match.blueSit)) {
-                    blue1.setBackgroundColor(blueResultOut);
-                } else if(favoriteTeams.contains(match.blue1)) {
-                    blue1.setBackgroundColor(highlightColor);
-                }
-
-                if(teamRanks.keySet().contains(match.blue2)) {
-                    blue2.setText(match.blue2 + " (" + teamRanks.get(match.blue2) + ")");
-                } else {
-                    blue2.setText(match.blue2);
-                }
-                if(match.blue2.equals(match.blueSit)) {
-                    blue2.setBackgroundColor(blueResultOut);
-                } else if(favoriteTeams.contains(match.blue2)) {
-                    blue2.setBackgroundColor(highlightColor);
-                }
-
-                if(teamRanks.keySet().contains(match.blue3)) {
-                    blue3.setText(match.blue3 + " (" + teamRanks.get(match.blue3) + ")");
-                } else {
-                    blue3.setText(match.blue3);
-                }
-                if(!match.blue3.isEmpty() && match.blue3.equals(match.blueSit)) {
-                    blue3.setBackgroundColor(blueResultOut);
-                } else if(favoriteTeams.contains(match.blue3)) {
-                    blue3.setBackgroundColor(highlightColor);
-                }
-
-                if(!match.scored) {
-                    redScore.setBackgroundColor(redResultOut);
-                    blueScore.setBackgroundColor(blueResultOut);
-                }
-
-                redScore.setText(Integer.toString(match.redScore));
-                if(match.redScore > match.blueScore) {
-                    redScore.setTypeface(null, Typeface.BOLD);
-                }
-
-                blueScore.setText(Integer.toString(match.blueScore));
-                if(match.blueScore > match.redScore) {
-                    blueScore.setTypeface(null, Typeface.BOLD);
-                }
+                MatchListAdapter matchListAdapter = new MatchListAdapter(matchList.getContext(), R.layout.template_event_matches, matches, teamRanks);
+                matchList.setAdapter(matchListAdapter);
             }
 
             if(progressBar != null) {
@@ -351,10 +533,10 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    static class RetrieveRankings extends AsyncTask<LinearLayout, Integer, ArrayList<Rank>> {
+    static class RetrieveRankings extends AsyncTask<ListView, Integer, ArrayList<Rank>> {
 
         private ProgressBar progressBar;
-        private LinearLayout rankingTable;
+        private ListView rankingList;
         final ArrayList<Rank> rankings = new ArrayList<>();
 
         void setProgressBar(ProgressBar bar) {
@@ -362,8 +544,8 @@ public class EventActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<Rank> doInBackground(LinearLayout... params) {
-            this.rankingTable = params[0];
+        protected ArrayList<Rank> doInBackground(ListView... params) {
+            this.rankingList = params[0];
             try {
                 String urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku;
                 JSONArray result = getFullResults(urlString);
@@ -411,52 +593,25 @@ public class EventActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(ArrayList<Rank> rankings) {
 
-            int whiteColor = ResourcesCompat.getColor(rankingTable.getResources(), R.color.white, null);
-            int highlightColor = ResourcesCompat.getColor(rankingTable.getResources(), R.color.highlightColor, null);
-
-            TeamClickListener teamClickListener = new TeamClickListener();
+            int whiteColor = ResourcesCompat.getColor(rankingList.getResources(), R.color.white, null);
 
             if(rankings.size() == 0) {
-                TextView emptyPage = new TextView(rankingTable.getContext());
+                TextView emptyPage = new TextView(rankingList.getContext());
                 emptyPage.setText(R.string.no_results);
-                rankingTable.addView(emptyPage);
-                rankingTable.setBackgroundColor(whiteColor);
-            }
+                rankingList.addView(emptyPage);
+                rankingList.setBackgroundColor(whiteColor);
+            } else {
+                LayoutInflater inflater = (LayoutInflater) rankingList.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
-            final SharedPreferences sharedPref = rankingTable.getContext().getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
-            Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
+                LinearLayout container = (LinearLayout) rankingList.getParent();
+                LinearLayout header = (LinearLayout) inflater.inflate(R.layout.template_event_headers,
+                        container, false);
+                LinearLayout rankingsTableHeader = (LinearLayout) header.findViewById(R.id.template_rankings_header);
+                header.removeView(rankingsTableHeader);
+                container.addView(rankingsTableHeader, 1);
 
-            LayoutInflater inflater = (LayoutInflater) rankingTable.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-            for(Rank rank : rankings) {
-                LinearLayout rankRow = (LinearLayout) inflater.inflate(R.layout.template_event_rankings,
-                        rankingTable, false);
-                rankingTable.addView(rankRow);
-
-                TextView rankNum = (TextView) rankRow.findViewById(R.id.rank);
-                rankNum.setText(Integer.toString(rank.rank));
-
-                Button team = (Button) rankRow.findViewById(R.id.team);
-                team.setOnClickListener(teamClickListener);
-                team.setText(rank.team);
-                if(favoriteTeams.contains(rank.team)) {
-                    team.setBackgroundColor(highlightColor);
-                }
-
-                TextView wp = (TextView) rankRow.findViewById(R.id.wp);
-                wp.setText(Integer.toString(rank.wp));
-
-                TextView ap = (TextView) rankRow.findViewById(R.id.ap);
-                ap.setText(Integer.toString(rank.ap));
-
-                TextView sp = (TextView) rankRow.findViewById(R.id.sp);
-                sp.setText(Integer.toString(rank.sp));
-
-                TextView trsp = (TextView) rankRow.findViewById(R.id.trsp);
-                trsp.setText(Integer.toString(rank.trsp));
-
-                TextView ccwm = (TextView) rankRow.findViewById(R.id.ccwm);
-                ccwm.setText(String.format("%.1f", rank.ccwm));
+                RankingListAdapter rankingListAdapter = new RankingListAdapter(rankingList.getContext(), R.layout.template_event_rankings, rankings);
+                rankingList.setAdapter(rankingListAdapter);
             }
 
             progressBar.setVisibility(View.GONE);
@@ -464,10 +619,10 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    static class RetrieveSkills extends AsyncTask<LinearLayout, Integer, ArrayList<Skill>> {
+    static class RetrieveSkills extends AsyncTask<ListView, Integer, ArrayList<Skill>> {
 
         private ProgressBar progressBar;
-        private LinearLayout skillsTable;
+        private ListView skillsList;
         final ArrayList<Skill> skills = new ArrayList<>();
 
         void setProgressBar(ProgressBar bar) {
@@ -475,8 +630,8 @@ public class EventActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<Skill> doInBackground(LinearLayout... params) {
-            this.skillsTable = params[0];
+        protected ArrayList<Skill> doInBackground(ListView... params) {
+            this.skillsList = params[0];
             try {
                 String urlString = "https://api.vexdb.io/v1/get_skills?sku=" + sku;
                 JSONArray result = getFullResults(urlString);
@@ -508,76 +663,30 @@ public class EventActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(ArrayList<Skill> skills) {
-
-            int whiteColor = ResourcesCompat.getColor(skillsTable.getResources(), R.color.white, null);
-            int accentColor = ResourcesCompat.getColor(skillsTable.getResources(), R.color.colorAccent, null);
-            int highlightColor = ResourcesCompat.getColor(skillsTable.getResources(), R.color.highlightColor, null);
-
-            final SharedPreferences sharedPref = skillsTable.getContext().getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
-            Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
-
-            float density = skillsTable.getResources().getDisplayMetrics().density;
-
-            LinearLayout.LayoutParams skillTypeParams =
-                    new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-            skillTypeParams.setMargins((int) (1 * density), 0, (int) (1 * density), (int) (2 * density));
-
-            TeamClickListener teamClickListener = new TeamClickListener();
-
-            LayoutInflater inflater = (LayoutInflater) skillsTable.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            int whiteColor = ResourcesCompat.getColor(skillsList.getResources(), R.color.white, null);
 
             if(skills.size() == 0) {
-                TextView emptyPage = new TextView(skillsTable.getContext());
+                TextView emptyPage = new TextView(skillsList.getContext());
                 emptyPage.setText(R.string.no_results);
-                skillsTable.addView(emptyPage);
-                skillsTable.setBackgroundColor(whiteColor);
+                skillsList.addView(emptyPage);
+                skillsList.setBackgroundColor(whiteColor);
             } else {
-                int[] tableOrder = {2, 0, 1};
-                for (int i : tableOrder) {
-                    TextView skillType = new TextView(skillsTable.getContext());
-                    skillType.setBackgroundColor(accentColor);
-                    skillType.setTextColor(whiteColor);
-                    skillType.setLayoutParams(skillTypeParams);
-                    switch (i) {
-                        default:
-                        case 2:
-                            skillType.setText(skillsTable.getContext().getString(R.string.robot_skills));
-                            break;
-                        case 1:
-                            skillType.setText(skillsTable.getContext().getString(R.string.auton_skills));
-                            break;
-                        case 0:
-                            skillType.setText(skillsTable.getContext().getString(R.string.driver_skills));
-                            break;
+                LayoutInflater inflater = (LayoutInflater) skillsList.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LinearLayout container = (LinearLayout) skillsList.getParent();
+                LinearLayout header = (LinearLayout) inflater.inflate(R.layout.template_event_headers,
+                        container, false);
+                LinearLayout skillsTableHeader = (LinearLayout) header.findViewById(R.id.template_skills_header);
+                header.removeView(skillsTableHeader);
+                container.addView(skillsTableHeader, 1);
+
+                Collections.sort(skills, new Comparator<Skill>() {
+                    @Override
+                    public int compare(final Skill a, final Skill b) {
+                        return a.type < b.type ? +1 : a.type > b.type ? -1 : 0;
                     }
-                    skillsTable.addView(skillType);
-
-                    for (Skill skill : skills) {
-                        if (skill.type != i) {
-                            continue;
-                        }
-
-                        LinearLayout skillRow = (LinearLayout) inflater.inflate(R.layout.template_event_skills, skillsTable, false);
-                        skillsTable.addView(skillRow);
-
-                        TextView rank = (TextView) skillRow.findViewById(R.id.rank);
-                        rank.setText(Integer.toString(skill.rank));
-
-                        Button team = (Button) skillRow.findViewById(R.id.team);
-                        team.setText(skill.team);
-                        team.setOnClickListener(teamClickListener);
-                        if(favoriteTeams.contains(skill.team)) {
-                            team.setBackgroundColor(highlightColor);
-                        }
-
-                        TextView attempts = (TextView) skillRow.findViewById(R.id.attempts);
-                        attempts.setText(Integer.toString(skill.attempts));
-
-                        TextView score = (TextView) skillRow.findViewById(R.id.score);
-                        score.setText(Integer.toString(skill.score));
-
-                    }
-                }
+                });
+                SkillsListAdapter skillsListAdapter = new SkillsListAdapter(skillsList.getContext(), R.layout.template_event_skills, skills);
+                skillsList.setAdapter(skillsListAdapter);
             }
 
             progressBar.setVisibility(View.GONE);
@@ -696,48 +805,32 @@ public class EventActivity extends AppCompatActivity {
             LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_event, container, false);
 
             ProgressBar fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
-            LinearLayout fragmentTable = (LinearLayout) rootView.findViewById(R.id.fragment_event_table);
-
-            RetrieveRankings retrieveRankingsTask = new RetrieveRankings();
-            RetrieveMatches retrieveMatchesTask = new RetrieveMatches();
-            RetrieveSkills retrieveSkillsTask = new RetrieveSkills();
-
-            LinearLayout template = (LinearLayout) inflater.inflate(R.layout.template_event_headers,
-                    rootView, false);
+            ListView fragmentList = (ListView) rootView.findViewById(R.id.fragment_event_list);
 
             switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
-                    LinearLayout rankingsTableHeader = (LinearLayout) template.findViewById(R.id.template_rankings_header);
-                    template.removeView(rankingsTableHeader);
-                    rootView.addView(rankingsTableHeader, 0);
-
+                    RetrieveRankings retrieveRankingsTask = new RetrieveRankings();
                     if (retrieveRankingsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveRankingsTask.cancel(true);
                     }
                     retrieveRankingsTask.setProgressBar(fragmentProgress);
-                    retrieveRankingsTask.execute(fragmentTable);
+                    retrieveRankingsTask.execute(fragmentList);
                     break;
                 case 2:
-                    LinearLayout matchesTableHeader = (LinearLayout) template.findViewById(R.id.template_matches_header);
-                    template.removeView(matchesTableHeader);
-                    rootView.addView(matchesTableHeader, 0);
-
+                    RetrieveMatches retrieveMatchesTask = new RetrieveMatches();
                     if (retrieveMatchesTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveMatchesTask.cancel(true);
                     }
                     retrieveMatchesTask.setProgressBar(fragmentProgress);
-                    retrieveMatchesTask.execute(fragmentTable);
+                    retrieveMatchesTask.execute(fragmentList);
                     break;
                 case 3:
-                    LinearLayout skillsTableHeader = (LinearLayout) template.findViewById(R.id.template_skills_header);
-                    template.removeView(skillsTableHeader);
-                    rootView.addView(skillsTableHeader, 0);
-
+                    RetrieveSkills retrieveSkillsTask = new RetrieveSkills();
                     if (retrieveSkillsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveSkillsTask.cancel(true);
                     }
                     retrieveSkillsTask.setProgressBar(fragmentProgress);
-                    retrieveSkillsTask.execute(fragmentTable);
+                    retrieveSkillsTask.execute(fragmentList);
                     break;
             }
 

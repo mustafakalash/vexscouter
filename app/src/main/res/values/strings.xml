@@ -658,10 +658,11 @@
 
     <string name="current_season">Starstruck</string>
 
-    <string name="robot_skills">Robot Skills</string>
-    <string name="driver_skills">Driver Skills</string>
-    <string name="auton_skills">Programming Skills</string>
+    <string name="robot_skills">Robot</string>
+    <string name="driver_skills">Driver</string>
+    <string name="auton_skills">Auton.</string>
     <string name="attempts">Attempts</string>
+    <string name="type_header">Type</string>
 
     <string name="refresh_button">Refresh</string>
 
@@ -673,9 +674,7 @@
     <string name="favorite_header">Favorites</string>
     <string name="all_header">All</string>
 
-    <string name="event_info">At %1$s:</string>
-    <string name="rank_info">Ranked #%1$.0f</string>
-    <string name="schedule">Schedule:</string>
+    <string name="event_info">Ranked #%1$.0f at %2$s:</string>
 
     <string name="search">Search</string>
 </resources>

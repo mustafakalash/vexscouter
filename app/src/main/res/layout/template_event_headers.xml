@@ -20,7 +20,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/team_header"
@@ -32,7 +33,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/wp_header"
@@ -44,7 +46,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/ap_header"
@@ -56,7 +59,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/sp_header"
@@ -68,7 +72,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/trsp_header"
@@ -80,7 +85,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/ccwm_header"
@@ -92,7 +98,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
     </LinearLayout>
 
     <LinearLayout
@@ -112,7 +119,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/team2_header"
@@ -124,7 +132,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/team3_header"
@@ -136,7 +145,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/score_header"
@@ -148,7 +158,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
     </LinearLayout>
 
@@ -160,6 +171,19 @@
         android:background="@color/colorAccent">
 
         <TextView
+            android:text="@string/type_header"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/type_skills_header"
+            android:layout_weight="1"
+            android:layout_marginRight="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/white"
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
+
+        <TextView
             android:text="@string/rank_header"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -169,7 +193,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/team_header"
@@ -181,7 +206,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/attempts"
@@ -193,7 +219,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
         <TextView
             android:text="@string/score_header"
@@ -205,7 +232,8 @@
             android:layout_marginLeft="1dp"
             android:layout_marginBottom="2dp"
             android:background="@color/white"
-            android:gravity="center_vertical|center" />
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
 
     </LinearLayout>
 

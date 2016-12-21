@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -94,9 +95,9 @@ public class TeamActivity extends AppCompatActivity {
             ratingBar.setRating(rating);
 
             if(result[2] > 0) {
-                ((TextView) findViewById(R.id.event_rank)).setText(String.format(getString(R.string.rank_info), result[2]));
+                ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), result[2], eventName));
             } else if(sku != null) {
-                findViewById(R.id.event_rank).setVisibility(View.GONE);
+                findViewById(R.id.event_information).setVisibility(View.GONE);
             }
 
             progressBar.setVisibility(View.GONE);
@@ -150,8 +151,8 @@ public class TeamActivity extends AppCompatActivity {
 
         if(sku != null) {
             findViewById(R.id.event_information).setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), eventName));
-            LinearLayout eventSchedule = (LinearLayout) findViewById(R.id.event_schedule);
+            ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), 0f, eventName));
+            ListView eventSchedule = (ListView) findViewById(R.id.event_schedule);
             EventActivity.RetrieveMatches retrieveMatchesTask = new EventActivity.RetrieveMatches();
             retrieveMatchesTask.setTeam(teamNumber);
             retrieveMatchesTask.execute(eventSchedule);

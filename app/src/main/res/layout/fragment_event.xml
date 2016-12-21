@@ -13,17 +13,10 @@
         android:max="100"
         android:progress="0" />
 
-    <ScrollView
+    <ListView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <!--suppress CheckTagEmptyBody -->
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/fragment_event_table"
-            android:background="@color/colorAccent"></LinearLayout>
-    </ScrollView>
+        android:layout_height="wrap_content"
+        android:id="@+id/fragment_event_list"
+        android:background="@color/colorAccent" />
 
 </LinearLayout>
