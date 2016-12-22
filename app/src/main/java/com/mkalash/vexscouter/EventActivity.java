@@ -511,7 +511,7 @@ public class EventActivity extends AppCompatActivity {
             if(matches.size() == 0) {
                 TextView emptyPage = new TextView(matchList.getContext());
                 emptyPage.setText(R.string.no_results);
-                matchList.addView(emptyPage);
+                ((LinearLayout) matchList.getParent()).addView(emptyPage);
                 matchList.setBackgroundColor(whiteColor);
             } else {
                 LayoutInflater inflater = (LayoutInflater) matchList.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -598,7 +598,7 @@ public class EventActivity extends AppCompatActivity {
             if(rankings.size() == 0) {
                 TextView emptyPage = new TextView(rankingList.getContext());
                 emptyPage.setText(R.string.no_results);
-                rankingList.addView(emptyPage);
+                ((LinearLayout) rankingList.getParent()).addView(emptyPage);
                 rankingList.setBackgroundColor(whiteColor);
             } else {
                 LayoutInflater inflater = (LayoutInflater) rankingList.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -668,7 +668,7 @@ public class EventActivity extends AppCompatActivity {
             if(skills.size() == 0) {
                 TextView emptyPage = new TextView(skillsList.getContext());
                 emptyPage.setText(R.string.no_results);
-                skillsList.addView(emptyPage);
+                ((LinearLayout) skillsList.getParent()).addView(emptyPage);
                 skillsList.setBackgroundColor(whiteColor);
             } else {
                 LayoutInflater inflater = (LayoutInflater) skillsList.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
