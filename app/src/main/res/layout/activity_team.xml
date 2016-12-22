@@ -7,68 +7,91 @@
     tools:context="com.mkalash.vexscouter.TeamActivity"
     android:orientation="vertical">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/team_name"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                    tools:ignore="SelectableText" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/team_school"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    android:textIsSelectable="true" />
+
+                <ProgressBar
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/team_progress"
+                    android:max="100"
+                    android:progress="0" />
+
+                <TextView
+                    android:text="@string/vrating_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/vrating_label" />
+
+                <RatingBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/vrating"
+                    android:isIndicator="true"
+                    android:stepSize="0.25"
+                    android:numStars="10"
+                    android:rating="0"
+                    style="@style/Widget.AppCompat.RatingBar.Indicator" />
+
+                <TextView
+                    android:text="@string/notes_label"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/notes_label" />
+
+                <EditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textMultiLine"
+                    android:ems="10"
+                    android:id="@+id/notes_edit_text" />
+
+                <Button
+                    android:text="@string/save_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/save_notes" />
+
+            </LinearLayout>
+        </ScrollView>
         <LinearLayout
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ProgressBar
-                style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/team_progress"
-                android:max="100"
-                android:progress="0" />
-
-            <TextView
-                android:text="@string/vrating_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/vrating_label" />
-
-            <RatingBar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/vrating"
-                android:isIndicator="true"
-                android:stepSize="0.25"
-                android:numStars="10"
-                android:rating="0"
-                style="@style/Widget.AppCompat.RatingBar.Indicator" />
-
-            <TextView
-                android:text="@string/notes_label"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/notes_label" />
-
-            <EditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="textMultiLine"
-                android:ems="10"
-                android:id="@+id/notes_edit_text" />
-
-            <Button
-                android:text="@string/save_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/save_notes" />
-        </LinearLayout>
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:id="@+id/event_information"
+            android:background="@color/colorAccent"
+            android:paddingTop="2dp"
             android:visibility="gone"
-            android:layout_marginTop="2dp">
+            android:layout_weight="1">
 
             <TextView
                 android:text="@string/event_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/event_info_header"
-                android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:background="@color/white" />
 
             <ListView
                 android:layout_width="match_parent"
@@ -76,6 +99,5 @@
                 android:orientation="vertical"
                 android:id="@+id/event_schedule"
                 android:background="@color/colorAccent" />
-
         </LinearLayout>
 </LinearLayout>

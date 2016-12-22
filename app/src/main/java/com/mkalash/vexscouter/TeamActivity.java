@@ -24,11 +24,14 @@ import static com.mkalash.vexscouter.MainActivity.getFullResults;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class TeamActivity extends AppCompatActivity {
@@ -38,8 +41,12 @@ public class TeamActivity extends AppCompatActivity {
     private String eventName;
     private final RetrieveRating retrieveRatingTask = new RetrieveRating();
     private Menu menu;
+    private float vRating = 0;
+    private String teamName;
+    private String organization;
+    private int eventRank = 0;
 
-    class RetrieveRating extends AsyncTask<RatingBar, Integer, float[]> {
+    class RetrieveRating extends AsyncTask<RatingBar, Integer, Void> {
 
         private ProgressBar progressBar;
         private RatingBar ratingBar;
@@ -49,36 +56,41 @@ public class TeamActivity extends AppCompatActivity {
         }
 
         @Override
-        protected float[] doInBackground(RatingBar... params) {
+        protected Void doInBackground(RatingBar... params) {
             this.ratingBar = params[0];
-            float[] returnValue = new float[3];
 
             try {
                 String urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&program=VRC&nodata=true";
-                int size = fetchJSON(urlString).getInt("size");
-                returnValue[1] = (float) size;
+                float size = (float) fetchJSON(urlString).getInt("size");
 
                 urlString = "https://api.vexdb.io/v1/get_season_rankings?season=" + getString(R.string.current_season) + "&team=" + teamNumber;
                 JSONArray result = getFullResults(urlString);
-                float vRating = (float) size;
-                if(result.length() == 1) {
+                if(result.length() > 0 && size > 0) {
                     JSONObject team = result.getJSONObject(0);
-                    vRating = (float) team.getInt("vrating_rank");
+                    float vRatingRank = (float) team.getInt("vrating_rank");
+                    vRating = 10f - ((10f * vRatingRank) / size);
                 }
-                returnValue[0] = vRating;
+
+                urlString = "https://api.vexdb.io/v1/get_teams?team=" + teamNumber;
+                result = getFullResults(urlString);
+                if(result.length() > 0) {
+                    JSONObject team = result.getJSONObject(0);
+                    teamName = team.getString("team_name");
+                    organization = team.getString("organisation");
+                }
 
                 if(sku != null) {
                     urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku + "&team=" + teamNumber;
                     result = getFullResults(urlString);
                     if(result.length() > 0) {
-                        returnValue[2] = result.getJSONObject(0).getInt("rank");
+                        eventRank = result.getJSONObject(0).getInt("rank");
                     }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            return returnValue;
+            return null;
         }
 
         @Override
@@ -87,17 +99,14 @@ public class TeamActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(float[] result) {
-            float rating = 0;
-            if(result[1] > 0) {
-                rating = 10f - ((10f * result[0]) / result[1]);
-            }
-            ratingBar.setRating(rating);
+        protected void onPostExecute(Void result) {
+            ratingBar.setRating(vRating);
 
-            if(result[2] > 0) {
-                ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), result[2], eventName));
-            } else if(sku != null) {
-                findViewById(R.id.event_information).setVisibility(View.GONE);
+            ((TextView) findViewById(R.id.team_name)).setText(teamName);
+            ((TextView) findViewById(R.id.team_school)).setText(organization);
+
+            if(sku != null) {
+                ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), eventRank, eventName));
             }
 
             progressBar.setVisibility(View.GONE);
@@ -151,7 +160,7 @@ public class TeamActivity extends AppCompatActivity {
 
         if(sku != null) {
             findViewById(R.id.event_information).setVisibility(View.VISIBLE);
-            ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), 0f, eventName));
+            ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), eventRank, eventName));
             ListView eventSchedule = (ListView) findViewById(R.id.event_schedule);
             EventActivity.RetrieveMatches retrieveMatchesTask = new EventActivity.RetrieveMatches();
             retrieveMatchesTask.setTeam(teamNumber);

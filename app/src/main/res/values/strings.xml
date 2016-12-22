@@ -674,7 +674,7 @@
     <string name="favorite_header">Favorites</string>
     <string name="all_header">All</string>
 
-    <string name="event_info">Ranked #%1$.0f at %2$s:</string>
+    <string name="event_info">Ranked #%1$d at %2$s:</string>
 
     <string name="search">Search</string>
 </resources>
