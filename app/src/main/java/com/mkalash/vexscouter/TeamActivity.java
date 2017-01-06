@@ -106,7 +106,11 @@ public class TeamActivity extends AppCompatActivity {
             ((TextView) findViewById(R.id.team_school)).setText(organization);
 
             if(sku != null) {
-                ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), eventRank, eventName));
+                if(eventRank > 0) {
+                    ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), eventRank, eventName));
+                } else {
+                    ((View) findViewById(R.id.event_info_header).getParent()).setVisibility(View.GONE);
+                }
             }
 
             progressBar.setVisibility(View.GONE);
