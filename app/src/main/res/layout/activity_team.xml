@@ -93,11 +93,11 @@
                 android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:background="@color/white" />
 
-            <ListView
+            <ExpandableListView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
+                android:layout_height="wrap_content"
                 android:id="@+id/event_schedule"
-                android:background="@color/colorAccent" />
+                android:background="@color/colorAccent"
+                android:groupIndicator="@null" />
         </LinearLayout>
 </LinearLayout>

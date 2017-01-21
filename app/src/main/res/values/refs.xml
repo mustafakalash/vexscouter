@@ -2,4 +2,6 @@
 <resources>
     <drawable name="btn_star_big_on">@android:drawable/btn_star_big_on</drawable>
     <drawable name="btn_star_big_off">@android:drawable/btn_star_big_off</drawable>
+    <drawable name="arrow_down_float">@android:drawable/arrow_down_float</drawable>
+    <drawable name="arrow_up_float">@android:drawable/arrow_up_float</drawable>
 </resources>

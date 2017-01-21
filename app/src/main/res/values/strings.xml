@@ -677,4 +677,10 @@
     <string name="event_info">Ranked #%1$d at %2$s:</string>
 
     <string name="search">Search</string>
+
+    <string name="round_practice">Practice</string>
+    <string name="round_qualification">Qualification</string>
+    <string name="round_quarterfinal">Quarterfinal</string>
+    <string name="round_semifinal">Semifinal</string>
+    <string name="round_final">Final</string>
 </resources>

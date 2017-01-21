@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -165,7 +166,7 @@ public class TeamActivity extends AppCompatActivity {
         if(sku != null) {
             findViewById(R.id.event_information).setVisibility(View.VISIBLE);
             ((TextView) findViewById(R.id.event_info_header)).setText(String.format(getString(R.string.event_info), eventRank, eventName));
-            ListView eventSchedule = (ListView) findViewById(R.id.event_schedule);
+            ExpandableListView eventSchedule = (ExpandableListView) findViewById(R.id.event_schedule);
             EventActivity.RetrieveMatches retrieveMatchesTask = new EventActivity.RetrieveMatches();
             retrieveMatchesTask.setTeam(teamNumber);
             retrieveMatchesTask.execute(eventSchedule);

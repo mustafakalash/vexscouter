@@ -24,7 +24,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
+import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -113,21 +116,20 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    private static class MatchListAdapter extends ArrayAdapter<Match> {
+    private static class MatchListAdapter extends BaseExpandableListAdapter {
 
         private LayoutInflater inflater;
         int highlightColor;
         Set<String> favoriteTeams;
         TeamClickListener teamClickListener;
-        List<Match> items;
+        Map<Round, List<Match>> items;
         int redResultOut;
         int blueResultOut;
         Map<String, Integer> teamRanks;
         int blueResult;
         int redResult;
 
-        MatchListAdapter(Context context, int resource, List<Match> items, Map<String, Integer> teamRanks) {
-            super(context, resource, items);
+        MatchListAdapter(Context context, Map<Round, List<Match>> items, Map<String, Integer> teamRanks) {
             this.items = items;
             this.teamRanks = teamRanks;
             inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -141,14 +143,65 @@ public class EventActivity extends AppCompatActivity {
             blueResultOut = ResourcesCompat.getColor(context.getResources(), R.color.blueResultOut, null);
         }
 
-        @NonNull
         @Override
-        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+        public int getGroupCount() {
+            return Round.values().length;
+        }
+
+        @Override
+        public int getChildrenCount(int groupPosition) {
+            return items.get(getGroup(groupPosition)).size();
+        }
+
+        @Override
+        public Round getGroup(int groupPosition) {
+            return Round.values()[groupPosition];
+        }
+
+        @Override
+        public Match getChild(int groupPosition, int childPosition) {
+            return items.get(getGroup(groupPosition)).get(childPosition);
+        }
+
+        @Override
+        public long getGroupId(int groupPosition) {
+            return groupPosition;
+        }
+
+        @Override
+        public long getChildId(int groupPosition, int childPosition) {
+            return childPosition;
+        }
+
+        @Override
+        public boolean hasStableIds() {
+            return false;
+        }
+
+        @Override
+        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+            if(convertView == null) {
+                convertView = inflater.inflate(R.layout.list_group, parent, false);
+            }
+            TextView groupHeader = (TextView) convertView.findViewById(R.id.group_header);
+            ImageView expandedIndicator = (ImageView) convertView.findViewById(R.id.expanded_indicator);
+            if(isExpanded) {
+                expandedIndicator.setImageResource(R.drawable.arrow_up_float);
+            } else {
+                expandedIndicator.setImageResource(R.drawable.arrow_down_float);
+            }
+            groupHeader.setText(Round.getTitle(getGroup(groupPosition)) + " (" + getChildrenCount(groupPosition) + ")");
+
+            return convertView;
+        }
+
+        @Override
+        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
             if(convertView == null) {
                 convertView = inflater.inflate(R.layout.template_event_matches, parent, false);
             }
 
-            Match match = getItem(position);
+            Match match = getChild(groupPosition, childPosition);
 
             if(match != null) {
                 TextView matchName = (TextView) convertView.findViewById(R.id.match_name);
@@ -275,6 +328,11 @@ public class EventActivity extends AppCompatActivity {
 
             return convertView;
         }
+
+        @Override
+        public boolean isChildSelectable(int groupPosition, int childPosition) {
+            return false;
+        }
     }
 
     private static class SkillsListAdapter extends ArrayAdapter<Skill> {
@@ -308,18 +366,7 @@ public class EventActivity extends AppCompatActivity {
 
             if (skill != null) {
                 TextView type = (TextView) convertView.findViewById(R.id.type);
-                switch(skill.type) {
-                    default:
-                    case 2:
-                        type.setText(R.string.robot_skills);
-                        break;
-                    case 1:
-                        type.setText(R.string.auton_skills);
-                        break;
-                    case 0:
-                        type.setText(R.string.driver_skills);
-                        break;
-                }
+                type.setText(SkillType.getTitle(skill.type));
 
                 TextView rank = (TextView) convertView.findViewById(R.id.rank);
                 rank.setText(Integer.toString(skill.rank));
@@ -344,14 +391,30 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
+    enum SkillType {
+        ROBOT, DRIVER, AUTON;
+
+       static String getTitle(SkillType type) {
+            switch(type) {
+                default:
+                case ROBOT:
+                    return "Robot";
+                case DRIVER:
+                    return "Driver";
+                case AUTON:
+                    return "Auton.";
+            }
+        }
+    }
+
     static class Skill {
         final String team;
         final int rank;
         final int attempts;
         final int score;
-        final int type;
+        final SkillType type;
 
-        Skill(String team, int rank, int attempts, int score, int type) {
+        Skill(String team, int rank, int attempts, int score, SkillType type) {
             this.team = team;
             this.rank = rank;
             this.attempts = attempts;
@@ -380,6 +443,26 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
+    enum Round {
+        PRACTICE, QUALIFICATION, QUARTERFINAL, SEMIFINAL, FINAL;
+
+        static String getTitle(Round round) {
+            switch(round) {
+                case PRACTICE:
+                    return "Practice";
+                default:
+                case QUALIFICATION:
+                    return "Qualification";
+                case QUARTERFINAL:
+                    return "Quarterfinal";
+                case SEMIFINAL:
+                    return "Semifinal";
+                case FINAL:
+                    return "Final";
+            }
+        }
+    }
+
     static class Match {
         final String name;
         final String red1;
@@ -393,8 +476,9 @@ public class EventActivity extends AppCompatActivity {
         final int redScore;
         final int blueScore;
         final boolean scored;
+        final Round round;
 
-        Match(String name, String red1, String red2, String red3, String redSit, String blue1, String blue2, String blue3, String blueSit, int redScore, int blueScore, boolean scored) {
+        Match(String name, String red1, String red2, String red3, String redSit, String blue1, String blue2, String blue3, String blueSit, int redScore, int blueScore, boolean scored, Round round) {
             this.name = name;
             this.red1 = red1;
             this.red2 = red2;
@@ -407,6 +491,7 @@ public class EventActivity extends AppCompatActivity {
             this.redScore = redScore;
             this.blueScore = blueScore;
             this.scored = scored;
+            this.round = round;
         }
     }
 
@@ -424,11 +509,11 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    static class RetrieveMatches extends AsyncTask<ListView, Integer, ArrayList<Match>> {
+    static class RetrieveMatches extends AsyncTask<ExpandableListView, Integer, Map<Round, List<Match>>> {
 
         private ProgressBar progressBar;
-        private ListView matchList;
-        final ArrayList<Match> matches = new ArrayList<>();
+        private ExpandableListView matchList;
+        final Map<Round, List<Match>> matches = new HashMap<>();
         private Map<String, Integer> teamRanks = new HashMap();
         private String team;
 
@@ -441,7 +526,7 @@ public class EventActivity extends AppCompatActivity {
         }
 
         @Override
-        protected ArrayList<Match> doInBackground(ListView... params) {
+        protected Map<Round, List<Match>> doInBackground(ExpandableListView... params) {
             this.matchList = params[0];
             try {
                 String urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku;
@@ -455,25 +540,28 @@ public class EventActivity extends AppCompatActivity {
                     urlString += "&team=" + team;
                 }
                 result = getFullResults(urlString);
+                final List<Match> practiceMatches = new ArrayList<>();
+                final List<Match> qualificationMatches = new ArrayList<>();
+                final List<Match> quarterfinalMatches = new ArrayList<>();
+                final List<Match> semifinalMatches = new ArrayList<>();
+                final List<Match> finalMatches = new ArrayList<>();
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject match = result.getJSONObject(i);
-                    String name;
-                    switch(match.getInt("round")) {
-                        case 1:
-                            name = "Practice #" + match.getInt("matchnum");
-                            break;
+                    Round round = Round.values()[match.getInt("round") - 1];
+                    String name = Round.getTitle(round);
+                    switch(round) {
                         default:
-                        case 2:
-                            name = "Qualification #" + match.getInt("matchnum");
+                        case PRACTICE:
+                        case QUALIFICATION:
+                        case FINAL:
+                            name += " #" + match.getInt("matchnum");
                             break;
-                        case 3:
-                            name = "Quarterfinal " + match.getInt("instance") + " #" + match.getInt("matchnum");
+                        case QUARTERFINAL:
+                            name += " " + match.getInt("instance") + " #" + match.getInt("matchnum");
                             break;
-                        case 4:
-                            name = "Semifinal " + match.getInt("instance") + " #" + match.getInt("matchnum");
+                        case SEMIFINAL:
+                            name += " " + match.getInt("instance") + " #" + match.getInt("matchnum");
                             break;
-                        case 5:
-                            name = "Final #" + match.getInt("matchnum");
                     }
                     String red1 = match.getString("red1");
                     String red2 = match.getString("red2");
@@ -486,12 +574,34 @@ public class EventActivity extends AppCompatActivity {
                     int redScore = match.getInt("redscore");
                     int blueScore = match.getInt("bluescore");
                     boolean scored = "1".equals(match.getString("scored"));
-                    Match matchObj = new Match(name, red1, red2, red3, redSit, blue1, blue2, blue3, blueSit, redScore, blueScore, scored);
-                    matches.add(matchObj);
+                    Match matchObj = new Match(name, red1, red2, red3, redSit, blue1, blue2, blue3, blueSit, redScore, blueScore, scored, round);
+                    switch(round) {
+                        case PRACTICE:
+                            practiceMatches.add(matchObj);
+                            break;
+                        default:
+                        case QUALIFICATION:
+                            qualificationMatches.add(matchObj);
+                            break;
+                        case QUARTERFINAL:
+                            quarterfinalMatches.add(matchObj);
+                            break;
+                        case SEMIFINAL:
+                            semifinalMatches.add(matchObj);
+                            break;
+                        case FINAL:
+                            finalMatches.add(matchObj);
+                            break;
+                    }
                     if(isCancelled()) {
                         break;
                     }
                 }
+                matches.put(Round.PRACTICE, practiceMatches);
+                matches.put(Round.QUALIFICATION, qualificationMatches);
+                matches.put(Round.QUARTERFINAL, quarterfinalMatches);
+                matches.put(Round.SEMIFINAL, semifinalMatches);
+                matches.put(Round.FINAL, finalMatches);
                 return matches;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -505,7 +615,7 @@ public class EventActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(ArrayList<Match> matches) {
+        protected void onPostExecute(Map<Round, List<Match>> matches) {
             int whiteColor = ResourcesCompat.getColor(matchList.getResources(), R.color.white, null);
 
             if(matches.size() == 0) {
@@ -522,7 +632,7 @@ public class EventActivity extends AppCompatActivity {
                 header.removeView(matchesTableHeader);
                 container.addView(matchesTableHeader, 1);
 
-                MatchListAdapter matchListAdapter = new MatchListAdapter(matchList.getContext(), R.layout.template_event_matches, matches, teamRanks);
+                MatchListAdapter matchListAdapter = new MatchListAdapter(matchList.getContext(), matches, teamRanks);
                 matchList.setAdapter(matchListAdapter);
             }
 
@@ -641,7 +751,7 @@ public class EventActivity extends AppCompatActivity {
                     int rank = skill.getInt("rank");
                     int attempts = skill.getInt("attempts");
                     int score = skill.getInt("score");
-                    int type = skill.getInt("type");
+                    SkillType type = SkillType.values()[skill.getInt("type")];
 
                     Skill skillObj = new Skill(team, rank, attempts, score, type);
                     skills.add(skillObj);
@@ -682,7 +792,14 @@ public class EventActivity extends AppCompatActivity {
                 Collections.sort(skills, new Comparator<Skill>() {
                     @Override
                     public int compare(final Skill a, final Skill b) {
-                        return a.type < b.type ? +1 : a.type > b.type ? -1 : 0;
+                        if(a.type.equals(b.type)) {
+                            return 0;
+                        } else if(a.type == SkillType.ROBOT || (a.type == SkillType.DRIVER && b.type == SkillType.AUTON)) {
+                            return -1;
+                        } else if(a.type == SkillType.AUTON || (a.type == SkillType.DRIVER && b.type == SkillType.ROBOT)) {
+                            return +1;
+                        }
+                        return 0;
                     }
                 });
                 SkillsListAdapter skillsListAdapter = new SkillsListAdapter(skillsList.getContext(), R.layout.template_event_skills, skills);
@@ -802,35 +919,49 @@ public class EventActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            LinearLayout rootView = (LinearLayout) inflater.inflate(R.layout.fragment_event, container, false);
-
-            ProgressBar fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
-            ListView fragmentList = (ListView) rootView.findViewById(R.id.fragment_event_list);
+            LinearLayout rootView;
+            ProgressBar fragmentProgress;
 
             switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
+                default:
                 case 1:
+                    rootView = (LinearLayout) inflater.inflate(R.layout.fragment_event, container, false);
+
+                    fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
+                    ListView rankingFragmentList = (ListView) rootView.findViewById(R.id.fragment_event_list);
+
                     RetrieveRankings retrieveRankingsTask = new RetrieveRankings();
                     if (retrieveRankingsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveRankingsTask.cancel(true);
                     }
                     retrieveRankingsTask.setProgressBar(fragmentProgress);
-                    retrieveRankingsTask.execute(fragmentList);
+                    retrieveRankingsTask.execute(rankingFragmentList);
                     break;
                 case 2:
+                    rootView = (LinearLayout) inflater.inflate(R.layout.fragment_event_expandable, container, false);
+
+                    fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
+                    ExpandableListView matchFragmentList = (ExpandableListView) rootView.findViewById(R.id.fragment_event_list);
+
                     RetrieveMatches retrieveMatchesTask = new RetrieveMatches();
                     if (retrieveMatchesTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveMatchesTask.cancel(true);
                     }
                     retrieveMatchesTask.setProgressBar(fragmentProgress);
-                    retrieveMatchesTask.execute(fragmentList);
+                    retrieveMatchesTask.execute(matchFragmentList);
                     break;
                 case 3:
+                    rootView = (LinearLayout) inflater.inflate(R.layout.fragment_event, container, false);
+
+                    fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
+                    ListView skillsFragmentList = (ListView) rootView.findViewById(R.id.fragment_event_list);
+
                     RetrieveSkills retrieveSkillsTask = new RetrieveSkills();
                     if (retrieveSkillsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveSkillsTask.cancel(true);
                     }
                     retrieveSkillsTask.setProgressBar(fragmentProgress);
-                    retrieveSkillsTask.execute(fragmentList);
+                    retrieveSkillsTask.execute(skillsFragmentList);
                     break;
             }
 
