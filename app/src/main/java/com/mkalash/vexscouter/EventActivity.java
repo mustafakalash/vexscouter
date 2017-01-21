@@ -313,6 +313,9 @@ public class EventActivity extends AppCompatActivity {
                 if (!match.scored) {
                     redScore.setBackgroundColor(redResultOut);
                     blueScore.setBackgroundColor(blueResultOut);
+                } else {
+                    redScore.setBackgroundColor(redResult);
+                    blueScore.setBackgroundColor(blueResult);
                 }
 
                 redScore.setText(Integer.toString(match.redScore));
