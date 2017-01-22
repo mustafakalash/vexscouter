@@ -319,11 +319,15 @@ public class EventActivity extends AppCompatActivity {
                 redScore.setText(Integer.toString(match.redScore));
                 if (match.redScore > match.blueScore) {
                     redScore.setTypeface(null, Typeface.BOLD);
+                } else {
+                    redScore.setTypeface(null, Typeface.NORMAL);
                 }
 
                 blueScore.setText(Integer.toString(match.blueScore));
                 if (match.blueScore > match.redScore) {
                     blueScore.setTypeface(null, Typeface.BOLD);
+                } else {
+                    blueScore.setTypeface(null, Typeface.NORMAL);
                 }
             }
 
