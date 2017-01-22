@@ -37,8 +37,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -807,7 +805,19 @@ public class EventActivity extends AppCompatActivity {
                     int rank = skill.getInt("rank");
                     int attempts = skill.getInt("attempts");
                     int score = skill.getInt("score");
-                    SkillType type = SkillType.values()[skill.getInt("type")];
+                    SkillType type;
+                    switch(skill.getInt("type")) {
+                        case 0:
+                            type = SkillType.DRIVER;
+                            break;
+                        default:
+                        case 1:
+                            type = SkillType.AUTON;
+                            break;
+                        case 2:
+                            type = SkillType.ROBOT;
+                            break;
+                    }
 
                     Skill skillObj = new Skill(team, rank, attempts, score);
                     switch(type) {
