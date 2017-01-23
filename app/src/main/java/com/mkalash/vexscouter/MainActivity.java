@@ -113,17 +113,17 @@ public class MainActivity extends AppCompatActivity {
         return result;
     }
 
-    static class RetrieveEvents extends AsyncTask<ArrayAdapter<String>, Integer, Map<String, String>> {
+    class RetrieveEvents extends AsyncTask<ArrayAdapter<String>, Integer, Map<String, String>> {
 
         private ProgressBar progressBar;
         private ArrayAdapter<String> eventListAdapter;
         private Map<String, String> events = new TreeMap<>();
 
-        public void setProgressBar(ProgressBar bar) {
+        void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
         }
 
-        public void setEventsMap(Map<String, String> events) {
+        void setEventsMap(Map<String, String> events) {
             this.events = events;
         }
 
@@ -173,12 +173,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static class RetrieveTeams extends AsyncTask<ArrayAdapter<String>, Integer, List<String>> {
+    class RetrieveTeams extends AsyncTask<ArrayAdapter<String>, Integer, List<String>> {
 
         private ProgressBar progressBar;
         private ArrayAdapter<String> teamListAdapter;
 
-        public void setProgressBar(ProgressBar bar) {
+        void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
         }
 
@@ -227,11 +227,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    static class EventListClickListener implements AdapterView.OnItemClickListener {
+    class EventListClickListener implements AdapterView.OnItemClickListener {
 
         private final Map<String, String> events;
 
-        public EventListClickListener(Map<String, String> events) {
+        EventListClickListener(Map<String, String> events) {
             this.events = events;
         }
 
@@ -239,14 +239,14 @@ public class MainActivity extends AppCompatActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String name = parent.getItemAtPosition(position).toString();
             String sku = events.get(name);
-            Intent intent = new Intent(view.getContext(), EventActivity.class);
+            Intent intent = new Intent(view.getContext(), DivisionActivity.class);
             intent.putExtra("EVENT_NAME", name);
             intent.putExtra("EVENT_SKU", sku);
             view.getContext().startActivity(intent);
         }
     }
 
-    private static class TeamListClickListener implements AdapterView.OnItemClickListener {
+    private class TeamListClickListener implements AdapterView.OnItemClickListener {
 
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -266,7 +266,6 @@ public class MainActivity extends AppCompatActivity {
 
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
@@ -303,16 +302,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class MainFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
         private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
         public static MainFragment newInstance(int sectionNumber) {
             MainFragment fragment = new MainFragment();
             Bundle args = new Bundle();
@@ -325,6 +315,7 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            MainActivity context = (MainActivity) rootView.getContext();
 
             Map<String, String> events = new TreeMap<>();
 
@@ -341,8 +332,8 @@ public class MainActivity extends AppCompatActivity {
                     android.R.layout.simple_list_item_1);
             fragmentFavoriteList.setAdapter(fragmentFavoriteListAdapter);
 
-            RetrieveEvents retrieveEventsTask = new RetrieveEvents();
-            RetrieveTeams retrieveTeamsTask = new RetrieveTeams();
+            RetrieveEvents retrieveEventsTask = context.new RetrieveEvents();
+            RetrieveTeams retrieveTeamsTask = context.new RetrieveTeams();
 
             final SharedPreferences sharedPref = rootView.getContext().getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
 
@@ -368,12 +359,12 @@ public class MainActivity extends AppCompatActivity {
 
             switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
                 case 1:
-                    fragmentList.setOnItemClickListener(new EventListClickListener(events));
+                    fragmentList.setOnItemClickListener(context.new EventListClickListener(events));
 
                     Set<String> favoriteEvents = sharedPref.getStringSet("favorite_events", new HashSet<String>());
                     if(favoriteEvents.size() > 0) {
                         fragmentFavoriteListAdapter.addAll(favoriteEvents);
-                        fragmentFavoriteList.setOnItemClickListener(new EventListClickListener(events));
+                        fragmentFavoriteList.setOnItemClickListener(context.new EventListClickListener(events));
                     } else {
                         fragmentFavoriteListAdapter.add("No favorites saved.");
                     }
@@ -386,12 +377,12 @@ public class MainActivity extends AppCompatActivity {
                     retrieveEventsTask.execute(fragmentListAdapter);
                     break;
                 case 2:
-                    fragmentList.setOnItemClickListener(new TeamListClickListener());
+                    fragmentList.setOnItemClickListener(context.new TeamListClickListener());
 
                     Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
                     if(favoriteTeams.size() > 0) {
                         fragmentFavoriteListAdapter.addAll(favoriteTeams);
-                        fragmentFavoriteList.setOnItemClickListener(new TeamListClickListener());
+                        fragmentFavoriteList.setOnItemClickListener(context.new TeamListClickListener());
                     } else {
                         fragmentFavoriteListAdapter.add("No favorites saved.");
                     }
@@ -407,21 +398,14 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
     }
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a EventFragment (defined as a static inner class below).
             return MainFragment.newInstance(position + 1);
         }
 

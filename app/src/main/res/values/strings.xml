@@ -685,4 +685,5 @@
     <string name="round_final">Final</string>
 
     <string name="info_tab">Info</string>
+    <string name="title_activity_division">DivisionActivity</string>
 </resources>

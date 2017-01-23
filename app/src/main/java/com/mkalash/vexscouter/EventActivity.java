@@ -15,7 +15,6 @@ import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,8 +36,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -51,6 +48,7 @@ public class EventActivity extends AppCompatActivity {
 
     private String eventName;
     private String sku;
+    private String division;
 
     private Menu menu;
 
@@ -342,144 +340,6 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    private static class SkillsListAdapter extends BaseExpandableListAdapter {
-
-        private LayoutInflater inflater;
-        int highlightColor;
-        Set<String> favoriteTeams;
-        TeamClickListener teamClickListener;
-        Map<SkillType, List<Skill>> items;
-        int whiteColor;
-
-        SkillsListAdapter(Context context, Map<SkillType, List<Skill>> items) {
-            this.items = items;
-            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            highlightColor = ResourcesCompat.getColor(context.getResources(), R.color.highlightColor, null);
-            whiteColor = ResourcesCompat.getColor(context.getResources(), R.color.white, null);
-            final SharedPreferences sharedPref = context.getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
-            favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
-            teamClickListener = ((EventActivity) context).new TeamClickListener();
-        }
-
-        @Override
-        public int getGroupCount() {
-            return SkillType.values().length;
-        }
-
-        @Override
-        public int getChildrenCount(int groupPosition) {
-            return items.get(getGroup(groupPosition)).size();
-        }
-
-        @Override
-        public SkillType getGroup(int groupPosition) {
-            return SkillType.values()[groupPosition];
-        }
-
-        @Override
-        public Skill getChild(int groupPosition, int childPosition) {
-            return items.get(getGroup(groupPosition)).get(childPosition);
-        }
-
-        @Override
-        public long getGroupId(int groupPosition) {
-            return groupPosition;
-        }
-
-        @Override
-        public long getChildId(int groupPosition, int childPosition) {
-            return childPosition;
-        }
-
-        @Override
-        public boolean hasStableIds() {
-            return false;
-        }
-
-        @Override
-        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
-            if(convertView == null) {
-                convertView = inflater.inflate(R.layout.list_group, parent, false);
-            }
-            TextView groupHeader = (TextView) convertView.findViewById(R.id.group_header);
-            ImageView expandedIndicator = (ImageView) convertView.findViewById(R.id.expanded_indicator);
-            if(isExpanded) {
-                expandedIndicator.setImageResource(R.drawable.arrow_up_float);
-            } else {
-                expandedIndicator.setImageResource(R.drawable.arrow_down_float);
-            }
-            groupHeader.setText(SkillType.getTitle(getGroup(groupPosition)) + " (" + getChildrenCount(groupPosition) + ")");
-
-            return convertView;
-        }
-
-        @Override
-        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = inflater.inflate(R.layout.template_event_skills, parent, false);
-            }
-
-            Skill skill = getChild(groupPosition, childPosition);
-
-            if (skill != null) {
-                TextView rank = (TextView) convertView.findViewById(R.id.rank);
-                rank.setText(Integer.toString(skill.rank));
-
-                Button team = (Button) convertView.findViewById(R.id.team);
-                team.setText(skill.team);
-                team.setOnClickListener(teamClickListener);
-                if(favoriteTeams.contains(skill.team)) {
-                    team.setBackgroundColor(highlightColor);
-                } else {
-                    team.setBackgroundColor(whiteColor);
-                }
-
-                TextView attempts = (TextView) convertView.findViewById(R.id.attempts);
-                attempts.setText(Integer.toString(skill.attempts));
-
-                TextView score = (TextView) convertView.findViewById(R.id.score);
-                score.setText(Integer.toString(skill.score));
-            }
-
-            return convertView;
-        }
-
-        @Override
-        public boolean isChildSelectable(int groupPosition, int childPosition) {
-            return false;
-        }
-    }
-
-    enum SkillType {
-        ROBOT, DRIVER, AUTON;
-
-       static String getTitle(SkillType type) {
-            switch(type) {
-                default:
-                case ROBOT:
-                    return "Robot";
-                case DRIVER:
-                    return "Driver";
-                case AUTON:
-                    return "Autonomous";
-            }
-        }
-    }
-
-    static class Skill {
-        final String team;
-        int rank;
-        final int attempts;
-        final int score;
-
-        Skill(String team, int rank, int attempts, int score) {
-            this.team = team;
-            this.rank = rank;
-            this.attempts = attempts;
-            this.score = score;
-        }
-    }
-
     static class Rank {
         final String team;
         final int rank;
@@ -580,13 +440,13 @@ public class EventActivity extends AppCompatActivity {
         protected Map<Round, List<Match>> doInBackground(ExpandableListView... params) {
             this.matchList = params[0];
             try {
-                String urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku;
+                String urlString = ("https://api.vexdb.io/v1/get_rankings?sku=" + sku + "&division=" + division).replace(" ", "%20");
                 JSONArray result = getFullResults(urlString);
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject rank = result.getJSONObject(i);
                     teamRanks.put(rank.getString("team"), rank.getInt("rank"));
                 }
-                urlString = "https://api.vexdb.io/v1/get_matches?sku=" + sku;
+                urlString = ("https://api.vexdb.io/v1/get_matches?sku=" + sku + "&division=" + division).replace(" ", "%20");
                 result = getFullResults(urlString);
                 final List<Match> practiceMatches = new ArrayList<>();
                 final List<Match> qualificationMatches = new ArrayList<>();
@@ -705,7 +565,7 @@ public class EventActivity extends AppCompatActivity {
         protected ArrayList<Rank> doInBackground(ListView... params) {
             this.rankingList = params[0];
             try {
-                String urlString = "https://api.vexdb.io/v1/get_rankings?sku=" + sku;
+                String urlString = ("https://api.vexdb.io/v1/get_rankings?sku=" + sku + "&division=" + division).replace(" ", "%20");
                 JSONArray result = getFullResults(urlString);
                 if(result.length() == 0) {
                     urlString = "https://api.vexdb.io/v1/get_teams?sku=" + sku;
@@ -777,134 +637,16 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    private class RetrieveSkills extends AsyncTask<ExpandableListView, Integer, Map<SkillType, List<Skill>>> {
-
-        private ProgressBar progressBar;
-        private ExpandableListView skillsList;
-        final Map<SkillType, List<Skill>> skills = new HashMap();
-
-        void setProgressBar(ProgressBar bar) {
-            this.progressBar = bar;
-        }
-
-        @Override
-        protected Map<SkillType, List<Skill>> doInBackground(ExpandableListView... params) {
-            this.skillsList = params[0];
-            List<Skill> robotSkills = new ArrayList();
-            List<Skill> driverSkills = new ArrayList();
-            List<Skill> autonSkills = new ArrayList();
-            try {
-                String urlString = "https://api.vexdb.io/v1/get_skills?sku=" + sku;
-                JSONArray result = getFullResults(urlString);
-                for(int i = 0; i < result.length(); i++) {
-                    JSONObject skill = result.getJSONObject(i);
-                    String team = skill.getString("team");
-                    int rank = skill.getInt("rank");
-                    int attempts = skill.getInt("attempts");
-                    int score = skill.getInt("score");
-                    SkillType type;
-                    switch(skill.getInt("type")) {
-                        case 0:
-                            type = SkillType.DRIVER;
-                            break;
-                        default:
-                        case 1:
-                            type = SkillType.AUTON;
-                            break;
-                        case 2:
-                            type = SkillType.ROBOT;
-                            break;
-                    }
-
-                    Skill skillObj = new Skill(team, rank, attempts, score);
-                    switch(type) {
-                        default:
-                        case ROBOT:
-                            robotSkills.add(skillObj);
-                            break;
-                        case DRIVER:
-                            driverSkills.add(skillObj);
-                            break;
-                        case AUTON:
-                            autonSkills.add(skillObj);
-                            break;
-                    }
-                    if(isCancelled()) {
-                        break;
-                    }
-                }
-                Collections.sort(driverSkills, new Comparator<Skill>() {
-                    @Override
-                    public int compare(final Skill a, final Skill b) {
-                        return a.score < b.score ? +1 : a.score > b.score ? -1 : 0;
-                    }
-                });
-                Collections.sort(autonSkills, new Comparator<Skill>() {
-                    @Override
-                    public int compare(final Skill a, final Skill b) {
-                        return a.score < b.score ? +1 : a.score > b.score ? -1 : 0;
-                    }
-                });
-                for(int i = 0; i < driverSkills.size(); i++) {
-                    driverSkills.get(i).rank = i + 1;
-                    autonSkills.get(i).rank = i + 1;
-                }
-                skills.put(SkillType.ROBOT, robotSkills);
-                skills.put(SkillType.DRIVER, driverSkills);
-                skills.put(SkillType.AUTON, autonSkills);
-                return skills;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Integer... progress) {
-            progressBar.setProgress(progress[0]);
-        }
-
-        @Override
-        protected void onPostExecute(Map<SkillType, List<Skill>> skills) {
-            int whiteColor = ResourcesCompat.getColor(skillsList.getResources(), R.color.white, null);
-
-            if(skills.size() == 0) {
-                TextView emptyPage = new TextView(skillsList.getContext());
-                emptyPage.setText(R.string.no_results);
-                ((LinearLayout) skillsList.getParent()).addView(emptyPage);
-                skillsList.setBackgroundColor(whiteColor);
-            } else {
-                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                LinearLayout container = (LinearLayout) skillsList.getParent();
-                LinearLayout header = (LinearLayout) inflater.inflate(R.layout.template_event_headers,
-                        container, false);
-                LinearLayout skillsTableHeader = (LinearLayout) header.findViewById(R.id.template_skills_header);
-                header.removeView(skillsTableHeader);
-                container.addView(skillsTableHeader, 1);
-
-                SkillsListAdapter skillsListAdapter = new SkillsListAdapter(skillsList.getContext(), skills);
-                skillsList.setAdapter(skillsListAdapter);
-            }
-
-            progressBar.setVisibility(View.GONE);
-            progressBar.setProgress(0);
-        }
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_event);
 
-        ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
-
         Intent intent = getIntent();
         eventName = intent.getStringExtra("EVENT_NAME");
         sku = intent.getStringExtra("EVENT_SKU");
-        setTitle(eventName);
+        division = intent.getStringExtra("DIVISION");
+        setTitle(division + " @ " + eventName);
 
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
@@ -1008,20 +750,6 @@ public class EventActivity extends AppCompatActivity {
                     retrieveMatchesTask.setProgressBar(fragmentProgress);
                     retrieveMatchesTask.execute(matchFragmentList);
                     break;
-                case 3:
-                    rootView = (LinearLayout) inflater.inflate(R.layout.fragment_event_expandable, container, false);
-                    context = (EventActivity) rootView.getContext();
-
-                    fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
-                    ExpandableListView skillsFragmentList = (ExpandableListView) rootView.findViewById(R.id.fragment_event_list);
-
-                    RetrieveSkills retrieveSkillsTask = context.new RetrieveSkills();
-                    if (retrieveSkillsTask.getStatus() == AsyncTask.Status.RUNNING) {
-                        retrieveSkillsTask.cancel(true);
-                    }
-                    retrieveSkillsTask.setProgressBar(fragmentProgress);
-                    retrieveSkillsTask.execute(skillsFragmentList);
-                    break;
             }
 
             return rootView;
@@ -1041,7 +769,7 @@ public class EventActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 3;
+            return 2;
         }
 
         @Override
@@ -1051,8 +779,6 @@ public class EventActivity extends AppCompatActivity {
                     return getString(R.string.rankings_tab);
                 case 1:
                     return getString(R.string.matches_tab);
-                case 2:
-                    return getString(R.string.skills_tab);
             }
             return null;
         }
