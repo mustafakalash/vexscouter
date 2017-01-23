@@ -47,8 +47,8 @@ import static com.mkalash.vexscouter.MainActivity.getFullResults;
 
 public class EventActivity extends AppCompatActivity {
 
-    private static String name;
-    private static String sku;
+    private String eventName;
+    private String sku;
 
     private Menu menu;
 
@@ -69,7 +69,7 @@ public class EventActivity extends AppCompatActivity {
             whiteColor = ResourcesCompat.getColor(context.getResources(), R.color.white, null);
             final SharedPreferences sharedPref = context.getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
             favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
-            teamClickListener = new TeamClickListener();
+            teamClickListener = ((EventActivity) context).new TeamClickListener();
         }
 
         @NonNull
@@ -136,7 +136,7 @@ public class EventActivity extends AppCompatActivity {
             blueResult = ResourcesCompat.getColor(context.getResources(), R.color.blueResult, null);
             final SharedPreferences sharedPref = context.getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
             favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
-            teamClickListener = new TeamClickListener();
+            teamClickListener = ((EventActivity) context).new TeamClickListener();
             redResultOut = ResourcesCompat.getColor(context.getResources(), R.color.redResultOut, null);
             blueResultOut = ResourcesCompat.getColor(context.getResources(), R.color.blueResultOut, null);
         }
@@ -356,7 +356,7 @@ public class EventActivity extends AppCompatActivity {
             whiteColor = ResourcesCompat.getColor(context.getResources(), R.color.white, null);
             final SharedPreferences sharedPref = context.getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
             favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
-            teamClickListener = new TeamClickListener();
+            teamClickListener = ((EventActivity) context).new TeamClickListener();
         }
 
         @Override
@@ -550,31 +550,25 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    private static class TeamClickListener implements Button.OnClickListener {
-
+    private class TeamClickListener implements Button.OnClickListener {
         @Override
         public void onClick(View view) {
-            Intent intent = new Intent(view.getContext(), TeamActivity.class);
+            Intent intent = new Intent(EventActivity.this, TeamActivity.class);
             String teamNumber = ((Button) view).getText().toString();
             teamNumber = teamNumber.replaceAll("\\s\\(\\d*\\)", "");
             intent.putExtra("TEAM_NUM", teamNumber);
             intent.putExtra("EVENT_SKU", sku);
-            intent.putExtra("EVENT_NAME", name);
-            view.getContext().startActivity(intent);
+            intent.putExtra("EVENT_NAME", eventName);
+            EventActivity.this.startActivity(intent);
         }
     }
 
-    static class RetrieveMatches extends AsyncTask<ExpandableListView, Integer, Map<Round, List<Match>>> {
+    private class RetrieveMatches extends AsyncTask<ExpandableListView, Integer, Map<Round, List<Match>>> {
 
         private ProgressBar progressBar;
         private ExpandableListView matchList;
         final Map<Round, List<Match>> matches = new HashMap<>();
         private Map<String, Integer> teamRanks = new HashMap();
-        private String team;
-
-        void setTeam(String team) {
-            this.team = team;
-        }
 
         void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
@@ -591,9 +585,6 @@ public class EventActivity extends AppCompatActivity {
                     teamRanks.put(rank.getString("team"), rank.getInt("rank"));
                 }
                 urlString = "https://api.vexdb.io/v1/get_matches?sku=" + sku;
-                if(team != null) {
-                    urlString += "&team=" + team;
-                }
                 result = getFullResults(urlString);
                 final List<Match> practiceMatches = new ArrayList<>();
                 final List<Match> qualificationMatches = new ArrayList<>();
@@ -679,7 +670,7 @@ public class EventActivity extends AppCompatActivity {
                 ((LinearLayout) matchList.getParent()).addView(emptyPage);
                 matchList.setBackgroundColor(whiteColor);
             } else {
-                LayoutInflater inflater = (LayoutInflater) matchList.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 LinearLayout container = (LinearLayout) matchList.getParent();
                 LinearLayout header = (LinearLayout) inflater.inflate(R.layout.template_event_headers,
                         container, false);
@@ -698,7 +689,7 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    static class RetrieveRankings extends AsyncTask<ListView, Integer, ArrayList<Rank>> {
+    private class RetrieveRankings extends AsyncTask<ListView, Integer, ArrayList<Rank>> {
 
         private ProgressBar progressBar;
         private ListView rankingList;
@@ -766,7 +757,7 @@ public class EventActivity extends AppCompatActivity {
                 ((LinearLayout) rankingList.getParent()).addView(emptyPage);
                 rankingList.setBackgroundColor(whiteColor);
             } else {
-                LayoutInflater inflater = (LayoutInflater) rankingList.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
                 LinearLayout container = (LinearLayout) rankingList.getParent();
                 LinearLayout header = (LinearLayout) inflater.inflate(R.layout.template_event_headers,
@@ -784,7 +775,7 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    static class RetrieveSkills extends AsyncTask<ExpandableListView, Integer, Map<SkillType, List<Skill>>> {
+    private class RetrieveSkills extends AsyncTask<ExpandableListView, Integer, Map<SkillType, List<Skill>>> {
 
         private ProgressBar progressBar;
         private ExpandableListView skillsList;
@@ -865,7 +856,7 @@ public class EventActivity extends AppCompatActivity {
                 ((LinearLayout) skillsList.getParent()).addView(emptyPage);
                 skillsList.setBackgroundColor(whiteColor);
             } else {
-                LayoutInflater inflater = (LayoutInflater) skillsList.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 LinearLayout container = (LinearLayout) skillsList.getParent();
                 LinearLayout header = (LinearLayout) inflater.inflate(R.layout.template_event_headers,
                         container, false);
@@ -893,26 +884,12 @@ public class EventActivity extends AppCompatActivity {
         }
 
         Intent intent = getIntent();
-        name = intent.getStringExtra("EVENT_NAME");
+        eventName = intent.getStringExtra("EVENT_NAME");
         sku = intent.getStringExtra("EVENT_SKU");
-        setTitle(name);
+        setTitle(eventName);
 
-        // Create the adapter that will return a fragment for each of the three
-        // primary sections of the activity.
-        /*
-      The {@link android.support.v4.view.PagerAdapter} that will provide
-      fragments for each of the sections. We use a
-      {@link FragmentPagerAdapter} derivative, which will keep every
-      loaded fragment in memory. If this becomes too memory intensive, it
-      may be best to switch to a
-      {@link android.support.v13.app.FragmentStatePagerAdapter}.
-     */
         SectionsPagerAdapter mSectionsPagerAdapter = new SectionsPagerAdapter(getFragmentManager());
 
-        // Set up the ViewPager with the sections adapter.
-        /*
-      The {@link ViewPager} that will host the section contents.
-     */
         ViewPager mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
     }
@@ -926,7 +903,7 @@ public class EventActivity extends AppCompatActivity {
         final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
         Set<String> favoriteEvents = sharedPref.getStringSet("favorite_events", new HashSet<String>());
 
-        if(favoriteEvents.contains(name)) {
+        if(favoriteEvents.contains(eventName)) {
             menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
         }
 
@@ -950,11 +927,11 @@ public class EventActivity extends AppCompatActivity {
                 Set<String> favoriteEventsPref = sharedPref.getStringSet("favorite_events", new HashSet<String>());
                 Set<String> favoriteEvents = new HashSet<>(favoriteEventsPref);
                 SharedPreferences.Editor prefEditor = sharedPref.edit();
-                if(favoriteEvents.contains(name)) {
-                    favoriteEvents.remove(name);
+                if(favoriteEvents.contains(eventName)) {
+                    favoriteEvents.remove(eventName);
                     menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_off));
                 } else {
-                    favoriteEvents.add(name);
+                    favoriteEvents.add(eventName);
                     menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
                 }
                 prefEditor.putStringSet("favorite_events", favoriteEvents);
@@ -965,20 +942,9 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
     public static class EventFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
         public static EventFragment newInstance(int sectionNumber) {
             EventFragment fragment = new EventFragment();
             Bundle args = new Bundle();
@@ -992,16 +958,18 @@ public class EventActivity extends AppCompatActivity {
                                  Bundle savedInstanceState) {
             LinearLayout rootView;
             ProgressBar fragmentProgress;
+            EventActivity context;
 
             switch(getArguments().getInt(ARG_SECTION_NUMBER)) {
                 default:
                 case 1:
                     rootView = (LinearLayout) inflater.inflate(R.layout.fragment_event, container, false);
+                    context = (EventActivity) rootView.getContext();
 
                     fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
                     ListView rankingFragmentList = (ListView) rootView.findViewById(R.id.fragment_event_list);
 
-                    RetrieveRankings retrieveRankingsTask = new RetrieveRankings();
+                    RetrieveRankings retrieveRankingsTask = context.new RetrieveRankings();
                     if (retrieveRankingsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveRankingsTask.cancel(true);
                     }
@@ -1010,11 +978,12 @@ public class EventActivity extends AppCompatActivity {
                     break;
                 case 2:
                     rootView = (LinearLayout) inflater.inflate(R.layout.fragment_event_expandable, container, false);
+                    context = (EventActivity) rootView.getContext();
 
                     fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
                     ExpandableListView matchFragmentList = (ExpandableListView) rootView.findViewById(R.id.fragment_event_list);
 
-                    RetrieveMatches retrieveMatchesTask = new RetrieveMatches();
+                    RetrieveMatches retrieveMatchesTask = context.new RetrieveMatches();
                     if (retrieveMatchesTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveMatchesTask.cancel(true);
                     }
@@ -1023,11 +992,12 @@ public class EventActivity extends AppCompatActivity {
                     break;
                 case 3:
                     rootView = (LinearLayout) inflater.inflate(R.layout.fragment_event_expandable, container, false);
+                    context = (EventActivity) rootView.getContext();
 
                     fragmentProgress = (ProgressBar) rootView.findViewById(R.id.fragment_event_progress);
                     ExpandableListView skillsFragmentList = (ExpandableListView) rootView.findViewById(R.id.fragment_event_list);
 
-                    RetrieveSkills retrieveSkillsTask = new RetrieveSkills();
+                    RetrieveSkills retrieveSkillsTask = context.new RetrieveSkills();
                     if (retrieveSkillsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveSkillsTask.cancel(true);
                     }
@@ -1040,10 +1010,6 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
         SectionsPagerAdapter(FragmentManager fm) {
@@ -1052,8 +1018,6 @@ public class EventActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            // Return a EventFragment (defined as a static inner class below).
             return EventFragment.newInstance(1 + position);
         }
 
