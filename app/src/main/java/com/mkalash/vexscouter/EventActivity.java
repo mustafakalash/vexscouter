@@ -37,6 +37,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -466,7 +468,7 @@ public class EventActivity extends AppCompatActivity {
 
     static class Skill {
         final String team;
-        final int rank;
+        int rank;
         final int attempts;
         final int score;
 
@@ -830,6 +832,22 @@ public class EventActivity extends AppCompatActivity {
                     if(isCancelled()) {
                         break;
                     }
+                }
+                Collections.sort(driverSkills, new Comparator<Skill>() {
+                    @Override
+                    public int compare(final Skill a, final Skill b) {
+                        return a.score < b.score ? +1 : a.score > b.score ? -1 : 0;
+                    }
+                });
+                Collections.sort(autonSkills, new Comparator<Skill>() {
+                    @Override
+                    public int compare(final Skill a, final Skill b) {
+                        return a.score < b.score ? +1 : a.score > b.score ? -1 : 0;
+                    }
+                });
+                for(int i = 0; i < driverSkills.size(); i++) {
+                    driverSkills.get(i).rank = i + 1;
+                    autonSkills.get(i).rank = i + 1;
                 }
                 skills.put(SkillType.ROBOT, robotSkills);
                 skills.put(SkillType.DRIVER, driverSkills);
