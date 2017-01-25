@@ -21,11 +21,6 @@ public class FilterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
 
-        ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
-
         getFragmentManager().beginTransaction()
                 .replace(android.R.id.content, new FilterFragment())
                 .commit();

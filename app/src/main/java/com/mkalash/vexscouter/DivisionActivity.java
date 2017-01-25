@@ -33,11 +33,6 @@ public class DivisionActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_division);
 
-        ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
-
         Intent intent = getIntent();
         name = intent.getStringExtra("EVENT_NAME");
         sku = intent.getStringExtra("EVENT_SKU");

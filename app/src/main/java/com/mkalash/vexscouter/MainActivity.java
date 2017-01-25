@@ -36,6 +36,8 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -131,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         protected final Map<String, String> doInBackground(ArrayAdapter<String>... params) {
             this.eventListAdapter = params[0];
+            events.clear();
             try {
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(eventListAdapter.getContext());
                 String season = sharedPref.getString("filter_season", "");
@@ -220,6 +223,28 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(List<String> teams) {
+            final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+            final Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
+
+            for(String team : favoriteTeams) {
+                if(!teams.contains(team)) {
+                    teams.add(team);
+                }
+            }
+
+            Collections.sort(teams, new Comparator<String>() {
+                @Override
+                public int compare(final String a, final String b) {
+                    if(favoriteTeams.contains(a) && !favoriteTeams.contains(b)) {
+                        return -1;
+                    } else if(favoriteTeams.contains(b) && !favoriteTeams.contains(a)) {
+                        return +1;
+                    } else {
+                        return a.compareTo(b);
+                    }
+                }
+            });
+
             teamListAdapter.clear();
             teamListAdapter.addAll(teams);
             progressBar.setVisibility(View.GONE);
@@ -317,7 +342,20 @@ public class MainActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             MainActivity context = (MainActivity) rootView.getContext();
 
-            Map<String, String> events = new TreeMap<>();
+            final SharedPreferences favSharedPref = context.getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+            final Set<String> favoriteEvents = favSharedPref.getStringSet("favorite_events", new HashSet<String>());
+            Map<String, String> events = new TreeMap<>(new Comparator<String>() {
+                @Override
+                public int compare(String a, String b) {
+                    if(favoriteEvents.contains(a) && !favoriteEvents.contains(b)) {
+                        return -1;
+                    } else if(favoriteEvents.contains(b) && !favoriteEvents.contains(a)) {
+                        return +1;
+                    } else {
+                        return a.compareTo(b);
+                    }
+                }
+            });
 
             ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.fragment_progress);
             ListView fragmentList = (ListView) rootView.findViewById(R.id.fragment_list);
@@ -326,16 +364,8 @@ public class MainActivity extends AppCompatActivity {
                     android.R.layout.simple_list_item_1);
             fragmentList.setAdapter(fragmentListAdapter);
 
-            ListView fragmentFavoriteList = (ListView) rootView.findViewById(R.id.fragment_favorite_list);
-            final ArrayAdapter<String> fragmentFavoriteListAdapter = new ArrayAdapter<>(
-                    rootView.getContext(),
-                    android.R.layout.simple_list_item_1);
-            fragmentFavoriteList.setAdapter(fragmentFavoriteListAdapter);
-
             RetrieveEvents retrieveEventsTask = context.new RetrieveEvents();
             RetrieveTeams retrieveTeamsTask = context.new RetrieveTeams();
-
-            final SharedPreferences sharedPref = rootView.getContext().getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
 
             EditText searchBar = (EditText) rootView.findViewById(R.id.fragment_search);
             searchBar.addTextChangedListener(new TextWatcher() {
@@ -361,14 +391,6 @@ public class MainActivity extends AppCompatActivity {
                 case 1:
                     fragmentList.setOnItemClickListener(context.new EventListClickListener(events));
 
-                    Set<String> favoriteEvents = sharedPref.getStringSet("favorite_events", new HashSet<String>());
-                    if(favoriteEvents.size() > 0) {
-                        fragmentFavoriteListAdapter.addAll(favoriteEvents);
-                        fragmentFavoriteList.setOnItemClickListener(context.new EventListClickListener(events));
-                    } else {
-                        fragmentFavoriteListAdapter.add("No favorites saved.");
-                    }
-
                     if (retrieveEventsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveEventsTask.cancel(true);
                     }
@@ -378,14 +400,6 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case 2:
                     fragmentList.setOnItemClickListener(context.new TeamListClickListener());
-
-                    Set<String> favoriteTeams = sharedPref.getStringSet("favorite_teams", new HashSet<String>());
-                    if(favoriteTeams.size() > 0) {
-                        fragmentFavoriteListAdapter.addAll(favoriteTeams);
-                        fragmentFavoriteList.setOnItemClickListener(context.new TeamListClickListener());
-                    } else {
-                        fragmentFavoriteListAdapter.add("No favorites saved.");
-                    }
 
                     if (retrieveTeamsTask.getStatus() == AsyncTask.Status.RUNNING) {
                         retrieveTeamsTask.cancel(true);

@@ -20,25 +20,13 @@
         </activity>
         <activity
             android:name=".FilterActivity"
-            android:label="@string/action_filter"
-            android:parentActivityName=".MainActivity"
-            tools:ignore="UnusedAttribute">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mkalash.vexscouter.MainActivity" />
-        </activity>
+            android:label="@string/action_filter" />
         <activity android:name=".TeamActivity" />
         <activity
             android:name=".EventActivity" />
         <activity
             android:name=".DivisionActivity"
-            android:parentActivityName=".MainActivity"
-            android:label="@string/title_activity_division"
-            tools:ignore="UnusedAttribute">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.mkalash.vexscouter.MainActivity" />
-            </activity>
+            android:label="@string/title_activity_division"/>
         <activity android:name=".SkillsActivity" />
     </application>
 
