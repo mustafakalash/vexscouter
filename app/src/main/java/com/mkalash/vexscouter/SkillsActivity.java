@@ -5,9 +5,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
@@ -35,6 +40,8 @@ import static com.mkalash.vexscouter.MainActivity.getFullResults;
 public class SkillsActivity extends AppCompatActivity {
     private String eventName;
     private String sku;
+
+    private Menu menu;
 
     private static class SkillsListAdapter extends BaseExpandableListAdapter {
 
@@ -322,5 +329,53 @@ public class SkillsActivity extends AppCompatActivity {
         }
         retrieveSkillsTask.setProgressBar(progressBar);
         retrieveSkillsTask.execute(skillsList);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.event_toolbar, menu);
+        this.menu = menu;
+
+        final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+        Set<String> favoriteEvents = sharedPref.getStringSet("favorite_events", new HashSet<String>());
+
+        if(favoriteEvents.contains(eventName)) {
+            menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.action_refresh:
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        recreate();
+                    }
+                }, 1);
+                return true;
+            case R.id.action_favorite:
+                final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);
+                Set<String> favoriteEventsPref = sharedPref.getStringSet("favorite_events", new HashSet<String>());
+                Set<String> favoriteEvents = new HashSet<>(favoriteEventsPref);
+                SharedPreferences.Editor prefEditor = sharedPref.edit();
+                if(favoriteEvents.contains(eventName)) {
+                    favoriteEvents.remove(eventName);
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_off));
+                } else {
+                    favoriteEvents.add(eventName);
+                    menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
+                }
+                prefEditor.putStringSet("favorite_events", favoriteEvents);
+                prefEditor.apply();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

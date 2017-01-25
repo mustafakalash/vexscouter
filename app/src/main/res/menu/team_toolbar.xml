@@ -5,4 +5,8 @@
         android:icon="@android:drawable/btn_star_big_off"
         app:showAsAction="ifRoom"
         android:id="@+id/action_favorite" />
+    <item android:title="@string/refresh_button"
+        android:id="@+id/action_refresh"
+        android:icon="@android:drawable/ic_popup_sync"
+        app:showAsAction="ifRoom" />
 </menu>

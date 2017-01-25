@@ -304,6 +304,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch(item.getItemId()) {
+            case R.id.action_refresh:
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        recreate();
+                    }
+                }, 1);
+                return true;
             case R.id.action_filter:
                 Intent intent = new Intent(this, FilterActivity.class);
                 startActivity(intent);
