@@ -14,8 +14,10 @@ import android.support.annotation.NonNull;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -51,6 +53,7 @@ public class EventActivity extends AppCompatActivity {
     private String division;
 
     private Menu menu;
+    private ShareActionProvider mShareActionProvider;
 
     private static class RankingListAdapter extends ArrayAdapter<Rank>  {
 
@@ -556,6 +559,7 @@ public class EventActivity extends AppCompatActivity {
         private ProgressBar progressBar;
         private ListView rankingList;
         final ArrayList<Rank> rankings = new ArrayList<>();
+        private Intent sendIntent;
 
         void setProgressBar(ProgressBar bar) {
             this.progressBar = bar;
@@ -596,6 +600,19 @@ public class EventActivity extends AppCompatActivity {
                         }
                     }
                 }
+                if(rankings.size() > 0) {
+                    final SharedPreferences sharedPref = getSharedPreferences("TeamActivity", Context.MODE_PRIVATE);
+                    JSONObject notesList = new JSONObject();
+                    for(Rank rank : rankings) {
+                        String loadedNotes = sharedPref.getString("notes_team_" + rank.team, "");
+                        notesList.put(rank.team, loadedNotes);
+                    }
+                    sendIntent = new Intent();
+                    sendIntent.setAction(Intent.ACTION_SEND);
+                    sendIntent.putExtra(Intent.EXTRA_SUBJECT, sku);
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, notesList.toString());
+                    sendIntent.setType("text/plain");
+                }
                 return rankings;
             } catch (Exception e) {
                 e.printStackTrace();
@@ -632,6 +649,8 @@ public class EventActivity extends AppCompatActivity {
                 rankingList.setAdapter(rankingListAdapter);
             }
 
+            setShareIntent(sendIntent);
+
             progressBar.setVisibility(View.GONE);
             progressBar.setProgress(0);
         }
@@ -667,7 +686,16 @@ public class EventActivity extends AppCompatActivity {
             menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
         }
 
+        MenuItem share = menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(share);
+
         return true;
+    }
+
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
     }
 
     @Override

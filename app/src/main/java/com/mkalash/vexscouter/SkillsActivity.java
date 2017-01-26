@@ -334,7 +334,7 @@ public class SkillsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.event_toolbar, menu);
+        inflater.inflate(R.menu.pre_event_toolbar, menu);
         this.menu = menu;
 
         final SharedPreferences sharedPref = getSharedPreferences("com.mkalash.vexscouter.favorites", Context.MODE_PRIVATE);

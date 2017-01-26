@@ -12,8 +12,10 @@ import android.os.Handler;
 import android.support.v13.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,6 +33,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -45,10 +48,12 @@ import static com.mkalash.vexscouter.MainActivity.getFullResults;
 
 public class TeamActivity extends AppCompatActivity {
 
+    private ShareActionProvider mShareActionProvider;
+    private Menu menu;
+
     private String teamNumber;
     private String sku;
     private String eventName;
-    private Menu menu;
     private float vRating = 0;
     private String teamName;
     private String organization;
@@ -527,7 +532,33 @@ public class TeamActivity extends AppCompatActivity {
         if (favoriteTeams.contains(teamNumber)) {
             menu.getItem(0).setIcon(ContextCompat.getDrawable(getApplicationContext(), R.drawable.btn_star_big_on));
         }
+
+        MenuItem share = menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(share);
+
+        final SharedPreferences notesSharedPref = getSharedPreferences("TeamActivity", Context.MODE_PRIVATE);
+        String loadedNotes = notesSharedPref.getString("notes_team_" + teamNumber, "");
+
+        JSONObject notesList = new JSONObject();
+        try {
+            notesList.put(teamNumber, loadedNotes);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_SUBJECT, teamNumber);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, notesList.toString());
+        sendIntent.setType("text/plain");
+        setShareIntent(sendIntent);
+
         return true;
+    }
+
+    private void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
     }
 
     @Override
@@ -616,6 +647,18 @@ public class TeamActivity extends AppCompatActivity {
                             String teamNotes = notesEditText.getText().toString();
                             prefEditor.putString("notes_team_" + context.teamNumber, teamNotes);
                             prefEditor.apply();
+                            JSONObject notesList = new JSONObject();
+                            try {
+                                notesList.put(context.teamNumber, teamNotes);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            Intent sendIntent = new Intent();
+                            sendIntent.setAction(Intent.ACTION_SEND);
+                            sendIntent.putExtra(Intent.EXTRA_SUBJECT, context.teamNumber);
+                            sendIntent.putExtra(Intent.EXTRA_TEXT, notesList.toString());
+                            sendIntent.setType("text/plain");
+                            context.setShareIntent(sendIntent);
                         }
                     }
 

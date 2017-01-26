@@ -322,19 +322,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onRestart() {
-        super.onRestart();
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                recreate();
-            }
-        }, 1);
-    }
-
     public static class MainFragment extends Fragment {
         private static final String ARG_SECTION_NUMBER = "section_number";
         public static MainFragment newInstance(int sectionNumber) {

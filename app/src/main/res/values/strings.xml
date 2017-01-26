@@ -686,4 +686,12 @@
 
     <string name="info_tab">Info</string>
     <string name="title_activity_division">DivisionActivity</string>
+
+    <string name="share_team">Share</string>
+    <string name="share_event">Share all teams</string>
+
+    <string name="import_label">Import</string>
+
+    <string name="choose_import">Select teams for which to import notes:</string>
+    <string name="import_complete">Import complete.</string>
 </resources>

@@ -22,12 +22,18 @@
             android:name=".FilterActivity"
             android:label="@string/action_filter" />
         <activity android:name=".TeamActivity" />
-        <activity
-            android:name=".EventActivity" />
+        <activity android:name=".EventActivity" />
         <activity
             android:name=".DivisionActivity"
-            android:label="@string/title_activity_division"/>
+            android:label="@string/title_activity_division" />
         <activity android:name=".SkillsActivity" />
+        <activity android:name=".ImportActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>
