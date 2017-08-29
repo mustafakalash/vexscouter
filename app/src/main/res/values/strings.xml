@@ -17,7 +17,10 @@
         <item>Skyrise</item>
         <item>Nothing But Net</item>
         <item>Starstruck</item>
+        <item>In The Zone</item>
     </string-array>
+
+    <string name="current_season">In The Zone</string>
 
     <string name="country_prompt">Country</string>
     <string-array name="countries">
@@ -655,8 +658,6 @@
     <string name="vrating_label">vRating:</string>
     <string name="notes_label">Notes:</string>
     <string name="save_button">Save</string>
-
-    <string name="current_season">Starstruck</string>
 
     <string name="robot_skills">Robot</string>
     <string name="driver_skills">Driver</string>
