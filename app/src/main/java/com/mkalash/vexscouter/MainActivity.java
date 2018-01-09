@@ -142,8 +142,10 @@ public class MainActivity extends AppCompatActivity {
                 country = (country.equals("Any")) ? "" : country;
                 String region = sharedPref.getString("filter_region", "");
                 region = (region.equals("Any")) ? "" : region;
+                String program = sharedPref.getString("filter_program", "");
+                program = (program.equals("Any")) ? "" : program;
 
-                String urlString = ("https://api.vexdb.io/v1/get_events?season=" + season + "&country=" + country + "&region=" + region).replace(" ", "%20");
+                String urlString = ("https://api.vexdb.io/v1/get_events?program=" + program + "&season=" + season + "&country=" + country + "&region=" + region).replace(" ", "%20");
                 JSONArray result = getFullResults(urlString);
                 for(int i = 0; i < result.length(); i++) {
                     JSONObject event = result.getJSONObject(i);
@@ -197,8 +199,10 @@ public class MainActivity extends AppCompatActivity {
                 country = (country.equals("Any")) ? "" : country;
                 String region = sharedPref.getString("filter_region", "");
                 region = (region.equals("Any")) ? "" : region;
+                String program = sharedPref.getString("filter_program", "");
+                program = (program.equals("Any")) ? "" : program;
 
-                String urlString = ("https://api.vexdb.io/v1/get_teams?program=VRC&season=" + season + "&country=" + country + "&region=" + region).replace(" ", "%20");
+                String urlString = ("https://api.vexdb.io/v1/get_teams?program=" + program + "&season=" + season + "&country=" + country + "&region=" + region).replace(" ", "%20");
                 JSONArray result = getFullResults(urlString);
                 List<String> teams = new ArrayList<>();
                 for(int i = 0; i < result.length(); i++) {

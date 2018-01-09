@@ -36,6 +36,7 @@ import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,20 +98,17 @@ public class EventActivity extends AppCompatActivity {
                     team.setBackgroundColor(whiteColor);
                 }
 
-                TextView wp = (TextView) convertView.findViewById(R.id.wp);
-                wp.setText(Integer.toString(rank.wp));
+                TextView wlt = (TextView) convertView.findViewById(R.id.wlt);
+                wlt.setText(rank.wins + "/" + rank.losses + "/" + rank.ties);
 
-                TextView ap = (TextView) convertView.findViewById(R.id.ap);
-                ap.setText(Integer.toString(rank.ap));
+                TextView points = (TextView) convertView.findViewById(R.id.points);
+                points.setText(rank.wp + "/" + rank.ap + "/" + rank.sp);
 
-                TextView sp = (TextView) convertView.findViewById(R.id.sp);
-                sp.setText(Integer.toString(rank.sp));
+                TextView maxScore = (TextView) convertView.findViewById(R.id.max_score);
+                maxScore.setText(Integer.toString(rank.maxScore));
 
-                TextView trsp = (TextView) convertView.findViewById(R.id.trsp);
-                trsp.setText(Integer.toString(rank.trsp));
-
-                TextView ccwm = (TextView) convertView.findViewById(R.id.ccwm);
-                ccwm.setText(String.format("%.1f", rank.ccwm));
+                TextView extraPoints = (TextView) convertView.findViewById(R.id.extra_points);
+                extraPoints.setText(rank.trsp + "/" + String.format("%.1f", rank.ccwm));
             }
 
             return convertView;
@@ -349,15 +347,23 @@ public class EventActivity extends AppCompatActivity {
         final int wp;
         final int ap;
         final int sp;
+        final int wins;
+        final int losses;
+        final int ties;
+        final int maxScore;
         final int trsp;
         final double ccwm;
 
-        Rank(String team, int rank, int wp, int ap, int sp, int trsp, double ccwm) {
+        Rank(String team, int rank, int wp, int ap, int sp, int wins, int losses, int ties, int maxScore, int trsp, double ccwm) {
             this.team = team;
             this.rank = rank;
             this.wp = wp;
             this.ap = ap;
             this.sp = sp;
+            this.wins = wins;
+            this.losses = losses;
+            this.ties = ties;
+            this.maxScore = maxScore;
             this.trsp = trsp;
             this.ccwm = ccwm;
         }
@@ -577,7 +583,7 @@ public class EventActivity extends AppCompatActivity {
                     for (int i = 0; i < result.length(); i++) {
                         JSONObject rank = result.getJSONObject(i);
                         String team = rank.getString("number");
-                        Rank rankObj = new Rank(team, i + 1, 0, 0, 0, 0, 0);
+                        Rank rankObj = new Rank(team, i + 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
                         rankings.add(rankObj);
                         if (isCancelled()) {
                             break;
@@ -591,9 +597,13 @@ public class EventActivity extends AppCompatActivity {
                         int wp = rank.getInt("wp");
                         int ap = rank.getInt("ap");
                         int sp = rank.getInt("sp");
+                        int wins = rank.getInt("wins");
+                        int losses = rank.getInt("losses");
+                        int ties = rank.getInt("ties");
+                        int maxScore = rank.getInt("max_score");
                         int trsp = rank.getInt("trsp");
                         double ccwm = rank.getDouble("ccwm");
-                        Rank rankObj = new Rank(team, rankNum, wp, ap, sp, trsp, ccwm);
+                        Rank rankObj = new Rank(team, rankNum, wp, ap, sp, wins, losses, ties, maxScore, trsp, ccwm);
                         rankings.add(rankObj);
                         if (isCancelled()) {
                             break;

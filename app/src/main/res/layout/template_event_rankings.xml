@@ -29,7 +29,7 @@
     <TextView
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:id="@+id/wp"
+        android:id="@+id/wlt"
         android:layout_weight="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:layout_marginLeft="1dp"
@@ -42,7 +42,20 @@
     <TextView
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:id="@+id/ap"
+        android:id="@+id/points"
+        android:layout_weight="1.5"
+        android:textAppearance="@style/TextAppearance.AppCompat.Small"
+        android:layout_marginLeft="1dp"
+        android:layout_marginRight="1dp"
+        android:layout_marginBottom="2dp"
+        android:gravity="center_vertical|center"
+        android:background="@color/white"
+        android:textIsSelectable="true" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:id="@+id/max_score"
         android:layout_weight="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:layout_marginLeft="1dp"
@@ -55,33 +68,7 @@
     <TextView
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:id="@+id/sp"
-        android:layout_weight="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
-        android:layout_marginBottom="2dp"
-        android:gravity="center_vertical|center"
-        android:background="@color/white"
-        android:textIsSelectable="true" />
-
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:id="@+id/trsp"
-        android:layout_weight="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:layout_marginLeft="1dp"
-        android:layout_marginRight="1dp"
-        android:layout_marginBottom="2dp"
-        android:gravity="center_vertical|center"
-        android:background="@color/white"
-        android:textIsSelectable="true" />
-
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:id="@+id/ccwm"
+        android:id="@+id/extra_points"
         android:layout_weight="1"
         android:textAppearance="@style/TextAppearance.AppCompat.Small"
         android:layout_marginLeft="1dp"

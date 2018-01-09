@@ -37,10 +37,10 @@
             android:layout_marginTop="2dp" />
 
         <TextView
-            android:text="@string/wp_header"
+            android:text="@string/wlt_header"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:id="@+id/wp_header"
+            android:id="@+id/wlt_header"
             android:layout_weight="1"
             android:layout_marginRight="1dp"
             android:layout_marginLeft="1dp"
@@ -50,10 +50,23 @@
             android:layout_marginTop="2dp" />
 
         <TextView
-            android:text="@string/ap_header"
+            android:text="@string/points_header"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:id="@+id/ap_header"
+            android:id="@+id/points_header"
+            android:layout_weight="1.5"
+            android:layout_marginRight="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginBottom="2dp"
+            android:background="@color/white"
+            android:gravity="center_vertical|center"
+            android:layout_marginTop="2dp" />
+
+        <TextView
+            android:text="@string/max_score_header"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/max_score_header"
             android:layout_weight="1"
             android:layout_marginRight="1dp"
             android:layout_marginLeft="1dp"
@@ -63,10 +76,10 @@
             android:layout_marginTop="2dp" />
 
         <TextView
-            android:text="@string/sp_header"
+            android:text="@string/extra_points_header"
             android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:id="@+id/sp_header"
+            android:id="@+id/extra_points_header"
             android:layout_weight="1"
             android:layout_marginRight="1dp"
             android:layout_marginLeft="1dp"
@@ -75,31 +88,6 @@
             android:gravity="center_vertical|center"
             android:layout_marginTop="2dp" />
 
-        <TextView
-            android:text="@string/trsp_header"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:id="@+id/trsp_header"
-            android:layout_weight="1"
-            android:layout_marginRight="1dp"
-            android:layout_marginLeft="1dp"
-            android:layout_marginBottom="2dp"
-            android:background="@color/white"
-            android:gravity="center_vertical|center"
-            android:layout_marginTop="2dp" />
-
-        <TextView
-            android:text="@string/ccwm_header"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:id="@+id/ccwm_header"
-            android:layout_weight="1"
-            android:layout_marginRight="1dp"
-            android:layout_marginLeft="1dp"
-            android:layout_marginBottom="2dp"
-            android:background="@color/white"
-            android:gravity="center_vertical|center"
-            android:layout_marginTop="2dp" />
     </LinearLayout>
 
     <LinearLayout

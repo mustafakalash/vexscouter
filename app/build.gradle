@@ -20,13 +20,12 @@ android {
         }
     }
     compileSdkVersion 24
-    buildToolsVersion "25.0.1"
     defaultConfig {
         applicationId "com.mkalash.vexscouter"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 7
-        versionName "3.1"
+        versionCode 8
+        versionName "4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
